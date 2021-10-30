@@ -22,7 +22,7 @@ public:
 	double getImpressions();
 	double getClicks();
 	double getCTR();
-	double getVertexNo();
+	int getVertexNo() const;
 	void incrementImpressions();
 	void incrementClicks();
 	void setUrl(string url);

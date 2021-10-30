@@ -42,7 +42,7 @@ double WebPage::getCTR()
     return ctr;
 }
 
-double WebPage::getVertexNo()
+int WebPage::getVertexNo() const
 {
     return vertexNo;
 }
