@@ -10,7 +10,7 @@
 #include<string>
 #include<unordered_map>
 
-#define WEB_SIZE 4
+
 //#include"Graph.h"
 using namespace std;
 
@@ -33,22 +33,22 @@ int main() {
 
 	Trie* head = new Trie();
 
-	Node node;
-
-
 	
 	read_url_keywords(pages,head);
 	initializeMap(pages, umap);
 	read_impressions(umap);
 
-	Graph graph(read_web_graph(umap), WEB_SIZE);		//web graph
+	vector<Edge> edges = read_web_graph(umap);
+	Graph graph(edges, WEB_SIZE);		//web graph
 	//printUmap(umap);
 	//vector<Edge> edges = { {pages[0], pages[1]}, {pages[1], pages[2]}, {pages[2], pages[3]}, {pages[1], pages[3]} };
 
-	printMap(umap);
+	//printMap(umap);
+	//cout << head->search("programming") << endl;
+	//pages[0].printWebPage();
+	graph.PageRank();
 	//graph.printGraph();
-
-	cout<< head->search("programming");
+	
 	return 0;
 }
 
@@ -81,8 +81,8 @@ void read_impressions(unordered_map<string, WebPage>& umap)
 				temp_word = word;
 			}
 			else {
-				cout << "word = " << word << endl;
-				cout << "umap[temp_word] = " << umap[temp_word].getUrl() << endl;
+				/*cout << "word = " << word << endl;
+				cout << "umap[temp_word] = " << umap[temp_word].getUrl() << endl;*/
 				umap[temp_word].setImpressions(stof(word));
 			}
 			
@@ -130,11 +130,11 @@ vector<Edge> read_web_graph(unordered_map<string, WebPage>& const umap)
 
 				/*cout << "tempEdge.src = " << tempEdge.src.getUrl() << endl;
 				cout << "tempEdge.dest = " << tempEdge.dest.getUrl() << endl;*/
-			edges.push_back(tempEdge);
 
 			wordcounter++;
 			//cout << "inner loop" << endl;
 		}
+			edges.push_back(tempEdge);
 
 		
 		//cout << "outer loop" << endl;

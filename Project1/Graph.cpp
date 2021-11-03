@@ -1,27 +1,41 @@
 #include "Graph.h"
 
-Graph::Graph(vector<Edge> const& edges, int N)
+Graph::Graph(vector<Edge> const	& edges, int N)
 {
-	cout << "in the constructor ";
+	cout << "in the constructor " << endl;
 	_n = N;
 	adjList.resize(_n);
-	bool* exists = new bool[N];
-	for (int i = 0; i < N; i++)
+	bool* exists = new bool[_n];
+	for (int i = 0; i < WEB_SIZE; i++)
+	{
+		temp[i] = 0.25;
+	}
+	for (int i = 0; i < _n; i++)
 	{
 		exists[i] = 0;
 	}
 	for (int i = 0; i < edges.size(); i++)
 	{
+		cout << "(" << edges[i].src.getUrl() << ", " << edges[i].dest.getUrl() << ")" << endl;
 		int source_number = edges[i].src.getVertexNo();
 		//cout << "source number = " << source_number << endl;
+		int dest_number = edges[i].dest.getVertexNo();
 
 		if (exists[source_number] == 0) {
-
+			/*cout << "edges["<< i<< "].src = "<<edges[i].src.getUrl()  << endl;*/
 			adjList[source_number].push_back(edges[i].src);
 			exists[source_number] = true;
 		}
+
+		if (exists[dest_number] == 0) {
+
+			adjList[dest_number].push_back(edges[i].dest);
+			exists[dest_number] = true;
+		}
 		
+
 			adjList[source_number].push_back(edges[i].dest);
+		
 
 		
 	}
@@ -57,5 +71,87 @@ void Graph::printGraph()
 		}
 		cout << endl;
 	}
+}
+
+void Graph::PageRank()
+{
+	
+
+	cout << endl << "PageRank initiating..." << endl;
+	//double pageRank = 0;
+	
+	
+
+	double oldTemp[WEB_SIZE];
+	for (int i = 0; i < WEB_SIZE; i++)
+	{
+		oldTemp[i] = temp[i];
+	}
+	bool pointedTo[WEB_SIZE];
+	for (int i = 0; i < WEB_SIZE; i++)
+	{
+		pointedTo[i] = 0;
+	}
+	for (int i = 0; i < _n; i++)
+	{
+		
+
+		cout << endl<<"In the i-th iteration for i = " << i;
+		
+		
+		double pageRank = 0;
+		WebPage* root = nullptr;
+		for (auto x = adjList[i].begin(); x != adjList[i].end(); x++)
+		{
+			if (x == adjList[i].begin())
+			{
+				root = &(*x);
+				
+					//temp[root->getVertexNo()] += 0.25;
+
+				//pointedTo[root->getVertexNo()] = true;
+				cout << " for the webPage: " << root->getUrl()<<" with vertexNo = "<<root->getVertexNo() << endl;
+			}
+			
+			else 
+			{
+				
+				cout << "For the page: " << x->getUrl() <<" with vertexNo = "<<x->getVertexNo()<< endl;
+				double numerator = oldTemp[root->getVertexNo()];
+				cout << "numerator = " << numerator << endl;
+				double childrenCount = adjList[root->getVertexNo()].size() - 1;
+				cout << "childrenCount = " << childrenCount << endl;
+				cout << "pageRank = " << numerator / childrenCount<< endl;
+
+				pointedTo[x->getVertexNo()] = true;
+
+				if (temp[x->getVertexNo()] == 0.25 && adjList[x->getVertexNo()].size() >1)
+				{
+					temp[x->getVertexNo()] = numerator / childrenCount;
+
+				}
+				else {
+					temp[x->getVertexNo()] += numerator / childrenCount;
+					
+				}
+				
+				
+			}
+			if (!pointedTo[x->getVertexNo()]) {
+				temp[x->getVertexNo()] = 0;
+			}
+			//temp[root->getVertexNo()] = pageRank;
+			
+		}
+		
+		//cout << "pageRank = " << temp[root->getVertexNo()] << endl;
+		
+		
+	}
+	for (int i = 0; i < WEB_SIZE; i++)
+	{
+		cout << "pageRank for vertexNo " << i << " equals " << temp[i] << endl;
+	}
+	cout << endl << "Executed PageRank" << endl;
 }
 

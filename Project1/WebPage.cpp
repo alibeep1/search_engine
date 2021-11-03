@@ -1,11 +1,14 @@
 #include "WebPage.h"
 
+
+
 WebPage::WebPage(const string url, int vertexNo) {
     this->vertexNo = vertexNo;
     clicks = 0;
   
 
     this->url = url;
+    pageRank = (1.0 / WEB_SIZE);
     //this->clicks = clicks;
     //ctr = clicks/ this->impressions;
     //cout << this->clicks;
@@ -17,12 +20,13 @@ WebPage::WebPage()
     clicks = 0;
     impressions = 0;
     ctr = 0;
-    url = "";
-    vertexNo = 0;
+    url = "empty webpage!";
+    vertexNo = 
+    pageRank = (1.0 / WEB_SIZE);
 
 }
 
-string WebPage::getUrl()
+string WebPage::getUrl() const
 {
     return url;
 }
@@ -40,6 +44,11 @@ double WebPage::getClicks()
 double WebPage::getCTR()
 {
     return ctr;
+}
+
+double WebPage::getPageRank()
+{
+    return pageRank;
 }
 
 int WebPage::getVertexNo() const
@@ -82,6 +91,11 @@ void WebPage::appendKeyword(string word)
     keywords.push_back(word);
 }
 
+void WebPage::setPageRank(double pageRank)
+{
+    this->pageRank = pageRank;
+}
+
 void WebPage::incrementImpressions()
 {
     impressions += 1;
@@ -96,11 +110,13 @@ void WebPage::printWebPage()
     cout << "Impressions: " << getImpressions() << "; ";
     cout << "Clicks: " << getClicks() << "; ";
     cout << "CTR: " << getCTR() << "; ";
-    cout << "keywords: ";
-    for (int i = 0; i < keywords.size(); i++)
+    cout << "PageRank: " << getPageRank() << "; ";
+
+    //cout << "keywords: ";
+  /*  for (int i = 0; i < keywords.size(); i++)
     {
         cout << keywords[i] << " ";
-    }
+    }*/
     
 }
 

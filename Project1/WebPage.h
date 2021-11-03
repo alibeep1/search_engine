@@ -1,7 +1,8 @@
 #include<iostream>
 #include<vector>
-using namespace std;
 
+using namespace std;
+#define WEB_SIZE 4
 #pragma once
 class WebPage
 {
@@ -12,16 +13,18 @@ private:
 	double clicks;
 	double ctr;
 	int vertexNo;
-	//double pageRank;
+	double pageRank;
 	void updateCTR();
 	vector<string> keywords;
 public:
+
 	WebPage(const string url, int vertexNo);
 	WebPage();
-	string getUrl();
+	string getUrl() const;
 	double getImpressions();
 	double getClicks();
 	double getCTR();
+	double getPageRank();
 	int getVertexNo() const;
 	void incrementImpressions();
 	void incrementClicks();
@@ -29,6 +32,7 @@ public:
 	void setImpressions(double impressions);
 	void setClicks(double clicks);
 	void setVertexNo(int number);
+	void setPageRank(double pageRank);
 	void appendKeyword(string word);
 	void printWebPage();
 };
