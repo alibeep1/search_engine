@@ -15,7 +15,11 @@ private:
 	int _n;
 public:
 	vector<vector<WebPage>> adjList;
-	double temp[WEB_SIZE];
+	//double temp[WEB_SIZE];
+	bool visited[WEB_SIZE];
+	double oldTemp[WEB_SIZE];
+	bool pointedTo[WEB_SIZE];
+
 	Graph(vector<Edge> const& edges, int N);
 
 	void addEdge(Edge const& newEdge);

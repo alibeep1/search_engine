@@ -17,11 +17,12 @@ WebPage::WebPage(const string url, int vertexNo) {
 
 WebPage::WebPage()
 {
+    //cout << "webpage executed";
     clicks = 0;
     impressions = 0;
     ctr = 0;
     url = "empty webpage!";
-    vertexNo = 
+    //vertexNo = 
     pageRank = (1.0 / WEB_SIZE);
 
 }
@@ -67,6 +68,11 @@ void WebPage::incrementClicks()
 void WebPage::setUrl(string url)
 {
     this->url = url;
+}
+
+void WebPage::incrementPageRank(double pr)
+{
+    this->pageRank += pr;
 }
 
 void WebPage::setImpressions(double impressions)

@@ -6,9 +6,22 @@ Graph::Graph(vector<Edge> const	& edges, int N)
 	_n = N;
 	adjList.resize(_n);
 	bool* exists = new bool[_n];
-	for (int i = 0; i < WEB_SIZE; i++)
+	/*for (int i = 0; i < WEB_SIZE; i++)
 	{
 		temp[i] = 0.25;
+	}*/
+	for (int i = 0; i < WEB_SIZE; i++)
+	{
+		visited[i] = 0;
+	}
+	for (int i = 0; i < WEB_SIZE; i++)
+	{
+		oldTemp[i] = 1.0 / WEB_SIZE;
+	}
+
+	for (int i = 0; i < WEB_SIZE; i++)
+	{
+		pointedTo[i] = 0;
 	}
 	for (int i = 0; i < _n; i++)
 	{
@@ -75,23 +88,8 @@ void Graph::printGraph()
 
 void Graph::PageRank()
 {
-	
-
 	cout << endl << "PageRank initiating..." << endl;
-	//double pageRank = 0;
-	
-	
 
-	double oldTemp[WEB_SIZE];
-	for (int i = 0; i < WEB_SIZE; i++)
-	{
-		oldTemp[i] = temp[i];
-	}
-	bool pointedTo[WEB_SIZE];
-	for (int i = 0; i < WEB_SIZE; i++)
-	{
-		pointedTo[i] = 0;
-	}
 	for (int i = 0; i < _n; i++)
 	{
 		
@@ -101,44 +99,61 @@ void Graph::PageRank()
 		
 		double pageRank = 0;
 		WebPage* root = nullptr;
+		double numerator = 0;
+		double childrenCount = 0;;
+
 		for (auto x = adjList[i].begin(); x != adjList[i].end(); x++)
 		{
 			if (x == adjList[i].begin())
 			{
 				root = &(*x);
-				
-					//temp[root->getVertexNo()] += 0.25;
-
-				//pointedTo[root->getVertexNo()] = true;
 				cout << " for the webPage: " << root->getUrl()<<" with vertexNo = "<<root->getVertexNo() << endl;
 			}
 			
 			else 
 			{
-				
+				numerator = oldTemp[root->getVertexNo()];
+				childrenCount = adjList[root->getVertexNo()].size() - 1;
+				//double numerator = oldTemp[root->getVertexNo()];
 				cout << "For the page: " << x->getUrl() <<" with vertexNo = "<<x->getVertexNo()<< endl;
-				double numerator = oldTemp[root->getVertexNo()];
 				cout << "numerator = " << numerator << endl;
-				double childrenCount = adjList[root->getVertexNo()].size() - 1;
+				//double childrenCount = adjList[root->getVertexNo()].size() - 1;
 				cout << "childrenCount = " << childrenCount << endl;
-				cout << "pageRank = " << numerator / childrenCount<< endl;
+				cout << "Supposed pageRank = " << numerator / childrenCount<< endl;
 
 				pointedTo[x->getVertexNo()] = true;
 
-				if (temp[x->getVertexNo()] == 0.25 && adjList[x->getVertexNo()].size() >1)
+				if (/*temp[x->getVertexNo()]*/ visited[x->getVertexNo()] == 0 && oldTemp[x->getVertexNo()]== 0.25 && adjList[x->getVertexNo()].size() >=1)
 				{
-					temp[x->getVertexNo()] = numerator / childrenCount;
+					visited[x->getVertexNo()] = 1;
+					cout << "in the if statement!" << endl;
+					oldTemp[x->getVertexNo()] = x->getPageRank();
+
+					x->setPageRank(numerator / childrenCount);
+
+
+					cout << "actual pageRank = " << x->getPageRank()<< endl;
+					//temp[x->getVertexNo()] = numerator / childrenCount;
 
 				}
 				else {
-					temp[x->getVertexNo()] += numerator / childrenCount;
+					oldTemp[x->getVertexNo()] = x->getPageRank();
+
+					cout << "in the ELSE statement!" << endl;
+					cout << "pageRank before incrementation: "<<x->getPageRank()<<endl;
+
+					//temp[x->getVertexNo()] += numerator / childrenCount;
+					x->incrementPageRank(numerator / childrenCount);
+
+					cout << "pageRank after incrementation: "<<x->getPageRank()<<endl;
 					
 				}
 				
 				
 			}
 			if (!pointedTo[x->getVertexNo()]) {
-				temp[x->getVertexNo()] = 0;
+				x->setPageRank(0);
+				//temp[x->getVertexNo()] = 0;
 			}
 			//temp[root->getVertexNo()] = pageRank;
 			
@@ -148,10 +163,37 @@ void Graph::PageRank()
 		
 		
 	}
-	for (int i = 0; i < WEB_SIZE; i++)
+	/*for (int i = 0; i < WEB_SIZE; i++)
 	{
 		cout << "pageRank for vertexNo " << i << " equals " << temp[i] << endl;
+	}*/
+
+	cout << endl << "printing pageRanks" << endl;
+
+	vector<WebPage>::iterator it;
+	for (int i = 0; i < _n; i++)
+	{
+		//it = adjList[i].begin();
+
+		for (auto x = adjList[i].begin(); x != adjList[i].end(); x++)
+		{
+			
+			if(x!=adjList[i].begin())
+				cout << x->getUrl() << ", pageRank = " << x->getPageRank() << endl;
+
+			
+			
+		}
+		cout << endl;
+		
 	}
+
+	//normalization
+		//output vertexNo,PageRank
+		//			2,0.7
+	//score calculation
+
+	//check if test1 will be zero
 	cout << endl << "Executed PageRank" << endl;
 }
 

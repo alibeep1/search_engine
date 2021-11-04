@@ -24,15 +24,14 @@ void initializeMap(WebPage  pages[WEB_SIZE], unordered_map<string, WebPage>& uma
 
 int main() {
 	
-
 	
+	//enum vNumber {1: "test1.com", 2:"test2.com"};
 	WebPage pages[WEB_SIZE];	//array of webpages
 
 	unordered_map<string, WebPage> umap;
 
 
 	Trie* head = new Trie();
-
 	
 	read_url_keywords(pages,head);
 	initializeMap(pages, umap);
@@ -40,12 +39,20 @@ int main() {
 
 	vector<Edge> edges = read_web_graph(umap);
 	Graph graph(edges, WEB_SIZE);		//web graph
+	//umap[0].setPageRank(10);
+	//printMap(umap);
+	//cout<<umap[0].getPageRank();
 	//printUmap(umap);
 	//vector<Edge> edges = { {pages[0], pages[1]}, {pages[1], pages[2]}, {pages[2], pages[3]}, {pages[1], pages[3]} };
 
 	//printMap(umap);
 	//cout << head->search("programming") << endl;
 	//pages[0].printWebPage();
+	/*WebPage x1;
+	x1.setUrl("mysite.com");
+	x1.setPageRank(10);
+	x1.incrementPageRank(1);
+	cout<<x1.getPageRank();*/
 	graph.PageRank();
 	//graph.printGraph();
 	

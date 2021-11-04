@@ -28,12 +28,14 @@ public:
 	int getVertexNo() const;
 	void incrementImpressions();
 	void incrementClicks();
+	void incrementPageRank(double pr);
 	void setUrl(string url);
 	void setImpressions(double impressions);
 	void setClicks(double clicks);
 	void setVertexNo(int number);
 	void setPageRank(double pageRank);
 	void appendKeyword(string word);
+
 	void printWebPage();
 };
 
