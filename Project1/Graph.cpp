@@ -6,17 +6,17 @@ Graph::Graph(vector<Edge> const	& edges, int N)
 	_n = N;
 	adjList.resize(_n);
 	bool* exists = new bool[_n];
-	/*for (int i = 0; i < WEB_SIZE; i++)
+	for (int i = 0; i < WEB_SIZE; i++)
 	{
-		temp[i] = 0.25;
-	}*/
+		temp[i] = 1.0 / WEB_SIZE;
+	}
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
 		visited[i] = 0;
 	}
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
-		oldTemp[i] = 1.0 / WEB_SIZE;
+		oldTemp[i] = temp[i];
 	}
 
 	for (int i = 0; i < WEB_SIZE; i++)
@@ -34,36 +34,31 @@ Graph::Graph(vector<Edge> const	& edges, int N)
 		//cout << "source number = " << source_number << endl;
 		int dest_number = edges[i].dest.getVertexNo();
 
+		map[edges[i].src.getUrl()] = edges[i].src.getVertexNo();
+
 		if (exists[source_number] == 0) {
 			/*cout << "edges["<< i<< "].src = "<<edges[i].src.getUrl()  << endl;*/
-			adjList[source_number].push_back(edges[i].src);
+			adjList[source_number].push_back(edges[i].src.getUrl());
+			
 			exists[source_number] = true;
 		}
 
 		if (exists[dest_number] == 0) {
+			map[edges[i].dest.getUrl()] = edges[i].dest.getVertexNo();
+			adjList[dest_number].push_back(edges[i].dest.getUrl());
 
-			adjList[dest_number].push_back(edges[i].dest);
 			exists[dest_number] = true;
+			
 		}
 		
 
-			adjList[source_number].push_back(edges[i].dest);
-		
-
-		
+			adjList[source_number].push_back(edges[i].dest.getUrl());
 	}
-	//for (auto Edge : edges) //what is that?
-	//{
-	//	int source = Edge.src.getVertexNo();
-	//	//cout << "Edge.src = " << Edge.src << "; Edge.dest = " << Edge.dest << endl;
-	//	adjList[source].push_back(Edge.dest); //pushes back the destination to the source's internal vector!
-	//	//adjList[Edge.dest].push_back(Edge.src); //for undirected graphs!
-	//}
 }
 
 void Graph::addEdge(Edge const& newEdge)
 {
-	adjList[newEdge.src.getVertexNo()].push_back(newEdge.dest);
+	adjList[newEdge.src.getVertexNo()].push_back(newEdge.dest.getUrl());
 }
 
 void Graph::printGraph()
@@ -76,10 +71,10 @@ void Graph::printGraph()
 		{
 			if (x == adjList[i].begin())
 			{
-				cout << (*x).getUrl() << " --> ";
+				cout << (*x) << " --> ";
 			}
 			else {
-				cout << (*x).getUrl() << " ";
+				cout << (*x) << " ";
 			}
 		}
 		cout << endl;
@@ -88,8 +83,8 @@ void Graph::printGraph()
 
 void Graph::PageRank()
 {
+	ofstream myFile;
 	cout << endl << "PageRank initiating..." << endl;
-
 	for (int i = 0; i < _n; i++)
 	{
 		
@@ -98,95 +93,106 @@ void Graph::PageRank()
 		
 		
 		double pageRank = 0;
-		WebPage* root = nullptr;
+		//WebPage* root = nullptr;
+		string root;
 		double numerator = 0;
-		double childrenCount = 0;;
-
+		double childrenCount = 0;
+		int indexOfX;
+		
 		for (auto x = adjList[i].begin(); x != adjList[i].end(); x++)
 		{
+			indexOfX = map[*x];
 			if (x == adjList[i].begin())
 			{
-				root = &(*x);
-				cout << " for the webPage: " << root->getUrl()<<" with vertexNo = "<<root->getVertexNo() << endl;
+				root = *x;
+				cout << "For the WebPage: " << *x << " with vertexNo = " << indexOfX << endl;
+				cout << "indexNo for the root = " << map[root] << endl;
+				//cout << " for the webPage: " << root->getUrl()<<" with vertexNo = "<<root->getVertexNo() << endl;
+				if (adjList[map[root]].size() == 1) {
+					cout << "true!" << endl;
+					oldTemp[map[root]] = temp[map[root]];
+					temp[map[root]] += temp[map[root]];
+					cout <<"pageRank for root with no outgoing links = " <<temp[map[root]] << endl;
+				}
+					
 			}
+			
 			
 			else 
 			{
-				numerator = oldTemp[root->getVertexNo()];
-				childrenCount = adjList[root->getVertexNo()].size() - 1;
-				//double numerator = oldTemp[root->getVertexNo()];
-				cout << "For the page: " << x->getUrl() <<" with vertexNo = "<<x->getVertexNo()<< endl;
-				cout << "numerator = " << numerator << endl;
-				//double childrenCount = adjList[root->getVertexNo()].size() - 1;
+				numerator = oldTemp[map[root]];
+				cout << "numerator= " << numerator << endl;
+				childrenCount = adjList[map[root]].size() -1;
 				cout << "childrenCount = " << childrenCount << endl;
-				cout << "Supposed pageRank = " << numerator / childrenCount<< endl;
 
-				pointedTo[x->getVertexNo()] = true;
+				cout << "For the page: " << *x <<" with vertexNo = "<< indexOfX << endl;
 
-				if (/*temp[x->getVertexNo()]*/ visited[x->getVertexNo()] == 0 && oldTemp[x->getVertexNo()]== 0.25 && adjList[x->getVertexNo()].size() >=1)
-				{
-					visited[x->getVertexNo()] = 1;
+				if(!pointedTo[indexOfX] && adjList[indexOfX].size() >= 1){
 					cout << "in the if statement!" << endl;
-					oldTemp[x->getVertexNo()] = x->getPageRank();
+					pointedTo[indexOfX] = true;
+					cout << "index of X: "<<indexOfX << endl;
+					visited[indexOfX] = true;
 
-					x->setPageRank(numerator / childrenCount);
-
-
-					cout << "actual pageRank = " << x->getPageRank()<< endl;
-					//temp[x->getVertexNo()] = numerator / childrenCount;
-
+					oldTemp[indexOfX] = temp[indexOfX];
+					cout << "oldTemp of X: " << oldTemp[indexOfX] << endl;
+					temp[indexOfX] = numerator / childrenCount;
+					cout << "temp of X: " << temp[indexOfX] << endl;
 				}
+
 				else {
-					oldTemp[x->getVertexNo()] = x->getPageRank();
+					//oldTemp[x->getVertexNo()] = x->getPageRank();
+					cout << "In the else statement" << endl;
 
-					cout << "in the ELSE statement!" << endl;
-					cout << "pageRank before incrementation: "<<x->getPageRank()<<endl;
+					//oldTemp[indexOfX] = temp[indexOfX];
+					cout << "oldTemp of X: " << oldTemp[indexOfX] << endl;
 
-					//temp[x->getVertexNo()] += numerator / childrenCount;
-					x->incrementPageRank(numerator / childrenCount);
+					temp[indexOfX] += (numerator / childrenCount);
+					
 
-					cout << "pageRank after incrementation: "<<x->getPageRank()<<endl;
+					cout << "pageRank after incrementation: "<<temp[indexOfX]<<endl;
 					
 				}
 				
 				
 			}
-			if (!pointedTo[x->getVertexNo()]) {
-				x->setPageRank(0);
+			if (!visited[indexOfX]) {
+
+				//x->setPageRank(0);
+
+				temp[indexOfX] = 0;
+
 				//temp[x->getVertexNo()] = 0;
+
 			}
-			//temp[root->getVertexNo()] = pageRank;
-			
 		}
-		
-		//cout << "pageRank = " << temp[root->getVertexNo()] << endl;
-		
-		
 	}
-	/*for (int i = 0; i < WEB_SIZE; i++)
-	{
-		cout << "pageRank for vertexNo " << i << " equals " << temp[i] << endl;
-	}*/
+	
 
 	cout << endl << "printing pageRanks" << endl;
-
-	vector<WebPage>::iterator it;
+	myFile.open("pagerank.csv");
+	//vector<WebPage>::iterator it;
+	unordered_map<string, int>::iterator it = map.begin();
 	for (int i = 0; i < _n; i++)
 	{
+		cout << "in iteration #: " << i << endl;
+
 		//it = adjList[i].begin();
-
-		for (auto x = adjList[i].begin(); x != adjList[i].end(); x++)
-		{
-			
-			if(x!=adjList[i].begin())
-				cout << x->getUrl() << ", pageRank = " << x->getPageRank() << endl;
-
-			
-			
-		}
-		cout << endl;
+		//double pr = temp[i];
+		/*cout << it->first << ", vertexNo: " << it->second << ", pageRank = " << temp[i] << endl;
+		it++;*/
+		string url = it->first;
+		double pr = temp[i];
+		cout << "iterator = " << url << ", ";
+		cout << "temp[i] = " << pr << endl;
+		it++;
 		
+		myFile << url << "," << pr << endl;
+		////myFile << " %s; %d", it->first, pr << endl;
+		//myFile << url << endl;
 	}
+	myFile.close();
+	
+
 
 	//normalization
 		//output vertexNo,PageRank

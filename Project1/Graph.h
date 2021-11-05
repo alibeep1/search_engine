@@ -4,6 +4,9 @@
 #include<string>
 #include "WebPage.h"
 #include<unordered_map>
+#include<fstream>
+#include<iomanip>
+#include<sstream>
 
 using namespace std;
 
@@ -14,8 +17,9 @@ class Graph
 private:
 	int _n;
 public:
-	vector<vector<WebPage>> adjList;
-	//double temp[WEB_SIZE];
+	vector<vector<string>> adjList;
+	unordered_map<string, int> map;
+	double temp[WEB_SIZE];
 	bool visited[WEB_SIZE];
 	double oldTemp[WEB_SIZE];
 	bool pointedTo[WEB_SIZE];
