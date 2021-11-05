@@ -14,49 +14,98 @@
 //#include"Graph.h"
 using namespace std;
 
+//Reads urls and assigns the corresponding keywords
+void read_url_keywords(unordered_map<string, WebPage>& umap, Trie* h);
 
-void read_url_keywords(WebPage pages[WEB_SIZE], Trie* h);
-vector<Edge> read_web_graph(unordered_map<string, WebPage>& const umap);
+//Reads and assigns impressions to websites by indexing them via their url
 void read_impressions(unordered_map<string, WebPage>&  umap);
 
+//Returns a vector of edges whose source is the first webpage (appearing in the line) and destination is the second one after the comma
+vector<Edge> read_web_graph(unordered_map<string, WebPage>& const umap);
+
+//Reads the calculated pageRank values from the generated pagerank.csv file and updates the pageRank values to the corresponding WebPages
+void read_pageRank(unordered_map <string, WebPage>& umap);
+
+//Executes printWebPage() for every WebPage object
+//Used mainly for debugging purposes
 void printMap(unordered_map<string, WebPage>& umap);
-void initializeMap(WebPage  pages[WEB_SIZE], unordered_map<string, WebPage>& umap);
+
+//void initializeMap(WebPage  pages[WEB_SIZE], unordered_map<string, WebPage>& umap);
 
 int main() {
 	
 	
-	//enum vNumber {1: "test1.com", 2:"test2.com"};
-	WebPage pages[WEB_SIZE];	//array of webpages
+	
+	WebPage pages[WEB_SIZE];	//array of webpages	//has become deprecated and unnecessary thanks for the unordered map
 
 	unordered_map<string, WebPage> umap;
 
 
-	Trie* head = new Trie();
+	Trie* head = new Trie();		//is the head of the trie data structure
 	
-	read_url_keywords(pages,head);
-	initializeMap(pages, umap);
+	
+	read_url_keywords(umap,head);		
+	
 	read_impressions(umap);
 
 	vector<Edge> edges = read_web_graph(umap);
-	Graph graph(edges, WEB_SIZE);		//web graph
-	//umap[0].setPageRank(10);
-	//printMap(umap);
-	//cout<<umap[0].getPageRank();
-	//printUmap(umap);
-	//vector<Edge> edges = { {pages[0], pages[1]}, {pages[1], pages[2]}, {pages[2], pages[3]}, {pages[1], pages[3]} };
 
-	//printMap(umap);
-	//cout << head->search("programming") << endl;
-	//pages[0].printWebPage();
-	/*WebPage x1;
-	x1.setUrl("mysite.com");
-	x1.setPageRank(10);
-	x1.incrementPageRank(1);
-	cout<<x1.getPageRank();*/
-	graph.PageRank();
+	Graph graph(edges, WEB_SIZE);		//web graph
+
 	//graph.printGraph();
+	graph.PageRank();
+	
+	read_pageRank(umap);
+	printMap(umap);
+
+	
+	cout<<endl<<head->search("programming");
+
 	
 	return 0;
+}
+
+void read_pageRank(unordered_map <string, WebPage>& umap) {
+	ifstream myFile;
+
+	myFile.open("F:/AUC/21-22/Analysis and Design of Algorithms - Lab/search_engine/Project1/pagerank.csv");
+
+
+	string line, word;
+
+
+	while (myFile.good())
+	{
+
+
+		getline(myFile, line, '\n');
+
+		stringstream s(line);
+
+		int wordCounter = 0;
+		string temp_word;
+		while (getline(s, word, ','))
+		{
+
+
+			if (wordCounter == 0)
+			{
+				temp_word = word;
+			}
+			else {
+				/*cout << "word = " << word << endl;
+				cout << "umap[temp_word] = " << umap[temp_word].getUrl() << endl;*/
+				umap[temp_word].setPageRank(stof(word));
+			}
+
+
+			wordCounter++;
+			//cout << "inner loop" << endl;
+		}
+
+		//cout << "outer loop" << endl;
+	}
+	myFile.close();
 }
 
 void read_impressions(unordered_map<string, WebPage>& umap)
@@ -151,7 +200,7 @@ vector<Edge> read_web_graph(unordered_map<string, WebPage>& const umap)
 }
 
 
-void read_url_keywords(WebPage  pages[WEB_SIZE], Trie* h)
+void read_url_keywords(unordered_map<string, WebPage>& umap, Trie* h)
 {
 	ifstream myFile;
 
@@ -173,27 +222,26 @@ void read_url_keywords(WebPage  pages[WEB_SIZE], Trie* h)
 		stringstream s(line);
 
 		int wordCounter = 0;
-
+		string temp_word;
 		while (getline(s, word, ','))
 		{
-			//cout << endl;
-			//cout << "counter = " << wordCounter << endl;
-			////cout << "in the if condition" << endl;
-			/*cout << "word = " << word << endl;*/
-			//cout << "inner while loop" << endl;
-
+			
 			if (wordCounter == 0)
 			{
-				//pages[vertexCount].setImpressions(10);
-				pages[vertexCount].setVertexNo(vertexCount);
-				pages[vertexCount].setUrl(word);
+				temp_word = word;
+				umap[temp_word].setVertexNo(vertexCount);
+				umap[temp_word].setUrl(temp_word);
+
+				//pages[vertexCount].setVertexNo(vertexCount);
+				//pages[vertexCount].setUrl(word);
 			}
 			else {
-				h->insert(word, pages[vertexCount]);
+				h->insert(word, umap[temp_word]);
+				//h->insert(word, pages[vertexCount]);
 			}
 
 			wordCounter++;
-			//cout << "inner loop" << endl;
+			
 		}
 
 		vertexCount++;
@@ -204,15 +252,15 @@ void read_url_keywords(WebPage  pages[WEB_SIZE], Trie* h)
 
 
 
-void initializeMap(WebPage  pages[WEB_SIZE], unordered_map<string, WebPage>& umap)
-{
-	//assigns the name of the webpage as keys and the WebPage object as the corresponding value;
-	for (int i = 0; i < WEB_SIZE; i++)
-	{
-		string url = pages[i].getUrl();
-		umap[url] = pages[i];
-	}
-}
+//void initializeMap(WebPage  pages[WEB_SIZE], unordered_map<string, WebPage>& umap)
+//{
+//	//assigns the name of the webpage as keys and the WebPage object as the corresponding value;
+//	for (int i = 0; i < WEB_SIZE; i++)
+//	{
+//		string url = pages[i].getUrl();
+//		umap[url] = pages[i];
+//	}
+//}
 
 void printMap(unordered_map<string, WebPage>& umap)
 {
