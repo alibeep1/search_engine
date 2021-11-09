@@ -60,9 +60,12 @@ int main() {
 	printMap(umap);
 
 	
-	head->search("programming");
+	vector<string> vec = head->search("programming");
 
-	
+	for (auto x: vec)
+	{
+		cout<<umap[x].getUrl();
+	}
 	return 0;
 }
 

@@ -29,11 +29,14 @@ void Trie::insertNode(Node)
 
 // Iterative function to search a key in a Trie. It returns true
 // if the key is found in the Trie; otherwise, it returns false
-bool Trie::search(string key)
+vector<string> Trie::search(string key)
 {
+    vector<string> vec;
+    vec.resize(0);
     // return false if Trie is empty
     if (this->node.character == nullptr) {
-        return false;
+        return vec;
+        //return false;
     }
 
     Node* curr = &node;
@@ -44,17 +47,20 @@ bool Trie::search(string key)
 
         // if the string is invalid (reached end of a path in the Trie)
         if (curr == nullptr) {
-            return false;
+            return vec;
+            //return false;
         }
     }
     for (int i = 0; i < curr->pages.size(); i++)
     {
-        cout << curr->pages[i].getUrl();
-        cout << endl;
+        vec.push_back(curr->pages[i].getUrl());
+       /* cout << curr->pages[i].getUrl();
+        cout << endl;*/
     }
     // return true if the current node is a leaf and the
     // end of the string is reached
-    return curr->isLeaf;
+    return vec;
+    //return curr->isLeaf;
 }
 
 // Returns true if a given node has any children

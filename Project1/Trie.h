@@ -31,6 +31,6 @@ public:
     void insert(string, WebPage);
     void insertNode(Node);
 
-    bool search(string);
+    vector<string> search(string);
     bool haveChildren(Node const*);
 };
