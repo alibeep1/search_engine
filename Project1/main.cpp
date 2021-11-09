@@ -36,7 +36,7 @@ int main() {
 	
 	
 	
-	WebPage pages[WEB_SIZE];	//array of webpages	//has become deprecated and unnecessary thanks for the unordered map
+	//WebPage pages[WEB_SIZE];	//array of webpages	//has become deprecated and unnecessary thanks for the unordered map
 
 	unordered_map<string, WebPage> umap;
 
@@ -52,6 +52,7 @@ int main() {
 
 	Graph graph(edges, WEB_SIZE);		//web graph
 
+
 	//graph.printGraph();
 	graph.PageRank();
 	
@@ -59,7 +60,7 @@ int main() {
 	printMap(umap);
 
 	
-	cout<<endl<<head->search("programming");
+	head->search("programming");
 
 	
 	return 0;

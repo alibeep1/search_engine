@@ -4,6 +4,9 @@
 using namespace std;
 #define WEB_SIZE 4
 #pragma once
+enum update {
+	impressions, clicks
+};
 class WebPage
 {
 private:
@@ -14,10 +17,14 @@ private:
 	double ctr;
 	int vertexNo;
 	double pageRank;
+	double score;
 	void updateCTR();
 	vector<string> keywords;
 public:
 
+	void calc_score(update operation);
+	double get_score();
+	//string myName(string x, int y);
 	WebPage(const string url, int vertexNo);
 	WebPage();
 	string getUrl() const;

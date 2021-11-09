@@ -15,6 +15,27 @@ WebPage::WebPage(const string url, int vertexNo) {
     //cout << "ctr = " << ctr << endl;
 }
 
+//should execute when the page appears (impressions) in the results after a query
+//also, after being clicked on (clicks)
+void WebPage::calc_score(update operation)
+{
+    if (operation == impressions) {
+        incrementImpressions();
+    }
+    if (operation == clicks) {
+        incrementClicks();
+    }
+    this->score = 0.4 * pageRank + 0.6 * ((1 - (0.1 * impressions / (1 + 0.1 * impressions))) * pageRank +
+        ((0.1 * impressions) / (1 + 0.1 * impressions) * ctr));
+}
+
+double WebPage::get_score()
+{
+    return this->pageRank;
+}
+
+
+
 WebPage::WebPage()
 {
     //cout << "webpage executed";
