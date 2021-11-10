@@ -9,7 +9,8 @@
 #include"Trie.h"
 #include<string>
 #include<unordered_map>
-
+#include<list>
+#include<algorithm>
 
 //#include"Graph.h"
 using namespace std;
@@ -30,15 +31,23 @@ void read_pageRank(unordered_map <string, WebPage>& umap);
 //Used mainly for debugging purposes
 void printMap(unordered_map<string, WebPage>& umap);
 
+//helper function that compares the score values of two webPages
+//returns true if the first element is greater than the second element (descending order)
+//used by the sort function
+bool compareScore(string i1, string i2);
 //void initializeMap(WebPage  pages[WEB_SIZE], unordered_map<string, WebPage>& umap);
 
+
+//bool isIndexed(string query, Trie* h, vector<string>* vec);
+
+
+	unordered_map<string, WebPage> umap;
 int main() {
 	
 	
 	
 	//WebPage pages[WEB_SIZE];	//array of webpages	//has become deprecated and unnecessary thanks for the unordered map
 
-	unordered_map<string, WebPage> umap;
 
 
 	Trie* head = new Trie();		//is the head of the trie data structure
@@ -57,17 +66,74 @@ int main() {
 	graph.PageRank();
 	
 	read_pageRank(umap);
+
 	printMap(umap);
 
-	
-	vector<string> vec = head->search("programming");
+	string response = "";
 
-	for (auto x: vec)
+	vector<string> results;
+	string query;
+	do
 	{
-		cout<<umap[x].getUrl();
-	}
+		cout << "Please enter your search query: ";
+		cin >> query;
+		if (query.size() > 0)
+		{
+
+			results = head->search(query);
+		}
+		if (results.empty()) {
+			cout << "Not found!" << endl;
+		}
+		else {
+
+			//sorts the results in descending order (from greatest to least) according to their pageScore
+			sort(results.begin(), results.end(), compareScore);
+
+			string choice = "";
+			cout << "Which website would you like to visit?" << endl;
+
+			for (auto x : results) {
+				cout << x << endl;
+				umap[x].incrementImpressions();		//incrementing impressions and updating pageScore
+			}
+			cin >> choice;
+			if (umap.find(choice) == umap.end())
+			{
+				cout << "Page does not exist!" << endl;
+			}
+			else {
+				umap[choice].incrementClicks();		//incrementing clicks after choice
+				cout << "You are visiting: " << choice;
+			}
+
+		}
+		cout << endl << "Would you like to continue? (Y/N)";
+		cin >> response;
+	} while (response == "Y");
+
+	system("clear");
+	
+	printMap(umap);
+
+
+
 	return 0;
 }
+
+bool compareScore(string i1, string i2) {
+	try {
+		/*cout << "i1: " << i1 << endl;
+		cout << "i2: " << i2 << endl;*/
+		return (umap[i1].getScore() > umap[i2].getScore());
+		throw i1;
+	}
+	catch(string x){
+		cout << "exception caught: " << x << " is not in umap!" << endl;
+	}
+}
+
+
 
 void read_pageRank(unordered_map <string, WebPage>& umap) {
 	ifstream myFile;

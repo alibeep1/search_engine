@@ -17,21 +17,18 @@ WebPage::WebPage(const string url, int vertexNo) {
 
 //should execute when the page appears (impressions) in the results after a query
 //also, after being clicked on (clicks)
-void WebPage::calc_score(update operation)
+void WebPage::calcScore()
 {
-    if (operation == impressions) {
-        incrementImpressions();
-    }
-    if (operation == clicks) {
-        incrementClicks();
-    }
-    this->score = 0.4 * pageRank + 0.6 * ((1 - (0.1 * impressions / (1 + 0.1 * impressions))) * pageRank +
-        ((0.1 * impressions) / (1 + 0.1 * impressions) * ctr));
+    
+    
+    this->score = 0.4 * pageRank + 0.6 * ((1.0 - (0.1 * impressions / (1.0 + 0.1 * impressions))) * pageRank +
+        ((0.1 * impressions) / (1.0 + 0.1 * impressions) * ctr));
+    //score = 0.5;
 }
 
-double WebPage::get_score()
+double WebPage::getScore()
 {
-    return this->pageRank;
+    return this->score;
 }
 
 
@@ -81,8 +78,9 @@ int WebPage::getVertexNo() const
 void WebPage::incrementClicks()
 {
     //cout << getClicks() << endl;
-    clicks +=1;
+    this->clicks +=1;
     updateCTR();
+    calcScore();
     //cout << getClicks();
 }
 
@@ -121,12 +119,14 @@ void WebPage::appendKeyword(string word)
 void WebPage::setPageRank(double pageRank)
 {
     this->pageRank = pageRank;
+    calcScore();
 }
 
 void WebPage::incrementImpressions()
 {
-    impressions += 1;
+    this->impressions += 1;
     updateCTR();
+    calcScore();
 }
 
 void WebPage::printWebPage()
@@ -134,10 +134,11 @@ void WebPage::printWebPage()
     cout << endl;
     cout << "URL: " << getUrl() << "; ";
     cout << "Vertex Number: " << getVertexNo() << "; ";
+    cout << "Score: " << getScore() << "; ";
+    cout << "PageRank: " << getPageRank() << "; ";
     cout << "Impressions: " << getImpressions() << "; ";
     cout << "Clicks: " << getClicks() << "; ";
     cout << "CTR: " << getCTR() << "; ";
-    cout << "PageRank: " << getPageRank() << "; ";
 
     //cout << "keywords: ";
   /*  for (int i = 0; i < keywords.size(); i++)
