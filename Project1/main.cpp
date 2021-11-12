@@ -8,14 +8,13 @@
 #include"Graph.h"
 #include"Trie.h"
 #include<string>
-#include<cstring>
+//#include<cstring>
 #include<unordered_map>
 #include<list>
 #include<algorithm>
 #include<string>
 #include <set>
 
-//#include"Graph.h"
 using namespace std;
 
 //Reads urls and assigns the corresponding keywords
@@ -34,19 +33,31 @@ void read_pageRank(unordered_map <string, WebPage>& umap);
 //Used mainly for debugging purposes
 void printMap(unordered_map<string, WebPage>& umap);
 
-//helper function that compares the score values of two webPages
-//returns true if the first element is greater than the second element (descending order)
-//used by the sort function
+/*Helper function that compares the score values of two webPages. 
+It returns true if the first WebPage score is greater than that of the second WebPage (descending order).
+Used by the sort function
+*/
 bool compareScore(string i1, string i2);
-void handle_results(vector<string>& results);
-//void initializeMap(WebPage  pages[WEB_SIZE], unordered_map<string, WebPage>& umap);
 
+/*
+	INPUT: sorted vector of website names
+	OUTPUT: NONE
+	FUNCTION: updates website impressions and clicks according to the 
+		vector of website names and user choice of visit, respectively
+*/
+void handle_results(vector<string>& results);
+
+/*
+Receives user input and returns a vector of website names that match the query - using the trie head.
+Accounts for exclusive uses of multiple OR/AND operators in the query.
+Utilizes sets to return duplicates (in the event of AND queries) and
+return 1 occurrences of duplicate websites (in the case of OR queries).
+*/
 vector<string> handle_input(string input, Trie* h);
 
-//bool isIndexed(string query, Trie* h, vector<string>* vec);
+//Holds the WebPage Objects which are indexed via their names
+unordered_map<string, WebPage> umap;
 
-
-	unordered_map<string, WebPage> umap;
 int main() {
 	
 	
@@ -75,31 +86,13 @@ int main() {
 	printMap(umap);
 
 
-	/*string temp;
-	
-	getline(cin, temp);
-	
-	vector<string> vec = handle_input(temp, head);*/
-	/*cout << "printing the returned vector..." << endl;
-	if (vec.empty()) {
-		cout << "vec is empty!";
-	}
-	else {
-
-		for (auto x : vec) {
-
-			cout << x << endl;
-		}
-	}
-	vector<string> v = head->search("computer  programming");
-	for (auto x: v)
-	{
-		cout << "v = " << x << endl;
-	}*/
+	//indicates whether the user prefers to terminate or continue browsing
 	string response;
 
+	//Stores the retrieved search results unsorted!
 	vector<string> results;
 
+	//stores the search query
 	string query;
 	do
 	{
@@ -109,16 +102,8 @@ int main() {
 		cin.ignore();	//clears the buffer for subsequent iterations
 		getline(cin, query);
 
-		//cout << "Before calling handle_input" << endl;
 		results = handle_input(query, head);
-		//cout << "After calling handle_input" << endl;
-
-
-		/*if (query.size() > 0)
-		{
-
-			results = head->search(query);
-		}*/
+		
 		if (results.empty()) {
 			cout << "Not found!" << endl;
 		}
@@ -130,18 +115,18 @@ int main() {
 			handle_results(results);
 
 		}
+
 		results.clear();
-		results.~vector();
+		
 		cout << endl << "Would you like to continue? (Y/N)" << endl;
 		query.clear();
-			//cin.ignore();
-		//getline(cin, response);
+			
 		cin >> response;
 	} while (response == "Y");
 
-	system("CLS");
+	system("CLS");		//clear screen
 	
-	printMap(umap);
+	printMap(umap);		//keep for debugging purposes
 
 
 
@@ -249,65 +234,19 @@ vector<string> handle_input(string input, Trie* h) {
 		}
 	}
 
-	//substr()
-		//for loop should be from i = 0 to n-3 for AND
-			//any thing retrieved from the head in case of the AND, we retrieve any duplicates
-
-		//for loop should be from i = 0 to n-2 for OR
-			//any thing retrieved from the head in case of the OR we push back to set
-
-	//if (indexOr != string::npos)
-	//{
-	//	hasOr = true;
-	//}
-	//if (input.find("AND") != string::npos)
-	//{
-	//	hasAnd = true;
-	//}
-	//for (int i = 0; i < input.size(); i++)
-	//{
-	//	
-	//	if (input[i] == ' ')n++;
-	//	
-	//}
-	//cout << "n = " << n << endl;
-	//stringstream s(input);
-
-	//if (n == 0)
-	//{
-	//	getline(s, input, ' ');
-	//	temp = h->search(input);
-	//	//return h->search(input);
-	//}
-	//if (n >= 1) {
-	//	getline(s, input);
-	//	input.replace(indexOr, indexOr+1,"");
-	//	cout << "input = " << input << endl;
-	//	temp = h->search(input);
-	//	for (int i = 0; i < temp.size(); i++)
-	//	{
-	//		set1.insert(h->search(input)[i]);
-	//	}
-	//	vector<string> v1(set1.begin(), set1.end());
-
-	//	return v1;
-	//	/*temp = (h->search(input));*/
-	//	/*return h->search(input);*/
-
-	//}
-	/*else { return temp; }*/
+	
 	return temp;
 }
 
 void handle_results(vector<string>& results)
 {
-	string choice = "";
-	cout << "Which website would you like to visit?" << endl;
-
 	for (auto x : results) {
 		cout << x << endl;
 		umap[x].incrementImpressions();		//incrementing impressions and updating pageScore
 	}
+	string choice = "";
+	cout << "Which website would you like to visit?" << endl;
+
 	cin >> choice;
 	if (umap.find(choice) == umap.end())
 	{
