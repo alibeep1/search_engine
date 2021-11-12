@@ -8,6 +8,7 @@
 #include"Graph.h"
 #include"Trie.h"
 #include<string>
+#include<cstring>
 #include<unordered_map>
 #include<list>
 #include<algorithm>
@@ -73,14 +74,13 @@ int main() {
 
 	printMap(umap);
 
-	string response = "";
 
-	string temp;
+	/*string temp;
 	
 	getline(cin, temp);
 	
-	vector<string> vec = handle_input(temp, head);
-	cout << "printing the returned vector..." << endl;
+	vector<string> vec = handle_input(temp, head);*/
+	/*cout << "printing the returned vector..." << endl;
 	if (vec.empty()) {
 		cout << "vec is empty!";
 	}
@@ -95,38 +95,53 @@ int main() {
 	for (auto x: v)
 	{
 		cout << "v = " << x << endl;
-	}
+	}*/
+	string response;
+
+	vector<string> results;
+
+	string query;
+	do
+	{
+		system("CLS");
+		cout << "Please enter your search query: ";
+
+		cin.ignore();	//clears the buffer for subsequent iterations
+		getline(cin, query);
+
+		//cout << "Before calling handle_input" << endl;
+		results = handle_input(query, head);
+		//cout << "After calling handle_input" << endl;
 
 
-	//string query;
-	//do
-	//{
-	//	vector<string> results;
-	//	cout << "Please enter your search query: ";
-	//	cin >> query;
-	//	if (query.size() > 0)
-	//	{
+		/*if (query.size() > 0)
+		{
 
-	//		results = head->search(query);
-	//	}
-	//	if (results.empty()) {
-	//		cout << "Not found!" << endl;
-	//	}
-	//	else {
+			results = head->search(query);
+		}*/
+		if (results.empty()) {
+			cout << "Not found!" << endl;
+		}
+		else {
 
-	//		//sorts the results in descending order (from greatest to least) according to their pageScore
-	//		sort(results.begin(), results.end(), compareScore);
+			//sorts the results in descending order (from greatest to least) according to their pageScore
+			sort(results.begin(), results.end(), compareScore);
 
-	//		handle_results(results);
+			handle_results(results);
 
-	//	}
-	//	cout << endl << "Would you like to continue? (Y/N)";
-	//	cin >> response;
-	//} while (response == "Y");
+		}
+		results.clear();
+		results.~vector();
+		cout << endl << "Would you like to continue? (Y/N)" << endl;
+		query.clear();
+			//cin.ignore();
+		//getline(cin, response);
+		cin >> response;
+	} while (response == "Y");
 
-	//system("CLS");
+	system("CLS");
 	
-	//printMap(umap);
+	printMap(umap);
 
 
 
@@ -146,6 +161,10 @@ vector<string> handle_input(string input, Trie* h) {
 	int indexAnd = -1;
 	string x = "";
 	//x.substr()
+	if (input.empty()) {
+		cout << "ERROR: input is empty!" << endl;
+		return temp;
+	}
 	
 	for (int i = 0; i < input.size() -1; i++)
 	{
@@ -181,27 +200,26 @@ vector<string> handle_input(string input, Trie* h) {
 	//in the case that OR is written explicitly
 	if (hasOr && indexOr != -1)
 	{
+		set<string> setA;
 		string word;
 		stringstream s(input);
 		while (getline(s, word, ' ')) {
 			//cout << "word = " << word << endl;
 			vector<string> temp1 = h->search(word);
-			set<string> s(temp1.begin(), temp1.end());
-			
+			for (auto d : temp1)
+			{
+				//to disallow duplicates
+				setA.insert(d);
+			}
 			//temp(s.begin(), s.end());
 			//vector<string> altTemp(s.begin(), s.end());
-			for (auto x: s)
+			//temp = altTemp;
+		}
+			for (auto x: setA)
 			{
 				temp.push_back(x);
 			}
-			//temp = altTemp;
-		}
 	
-		
-
-		//vector<string> temp1;
-		
-		//set1.insert(h->search(input));
 	}
 	if (hasAnd)
 	{
@@ -218,7 +236,7 @@ vector<string> handle_input(string input, Trie* h) {
 			set<string>::iterator it = setB.begin();
 			for (auto x : temp1)
 			{
-
+				//if there exists a duplicate, then push it to the vector
 				if (setB.insert(x).second == false) {
 					temp.push_back(x);
 				}
