@@ -15,6 +15,8 @@
 #include<string>
 #include <set>
 
+#include <limits>
+
 using namespace std;
 
 //Reads urls and assigns the corresponding keywords
@@ -93,35 +95,88 @@ int main() {
 	vector<string> results;
 
 	//stores the search query
-	string query;
 	do
 	{
+		string query ="";
 		system("CLS");
-		cout << "Please enter your search query: ";
+		cout << "Please enter your search query:";
 
-		cin.ignore();	//clears the buffer for subsequent iterations
-		getline(cin, query);
+		
+		getline(cin>>ws, query);
+		cout <<"query = "<< query << endl;
+		//cout << "query = " << query << endl;
 
 		results = handle_input(query, head);
 		
 		if (results.empty()) {
 			cout << "Not found!" << endl;
+			system("pause");
 		}
 		else {
+			//cout << "in the else" << endl;
+			bool resume = true;
+			string browse;
 
 			//sorts the results in descending order (from greatest to least) according to their pageScore
 			sort(results.begin(), results.end(), compareScore);
 
-			handle_results(results);
+			for (auto x : results) {
+				
+				umap[x].incrementImpressions();		//incrementing impressions and updating pageScore
+			}
+			do
+			{
+				//system("CLS");
+				cout << "Search Results:" << endl;
+				for (auto x : results) {
+					cout << "  " << x << endl;
+				}
+				cout
+					<< endl
+					<< left
+					<< setw(5)
+					<< "Would you like to: "
+					<< endl
+					<< left
+					<< setw(5)
+					<< "1. choose a webpage to open"
+					<< endl
+					<< left
+					<< setw(5)
+					<< "2. perform a new search"
+					<< endl
+					<< left
+					<< setw(5)
+					<< "3. Exit"
+					<< endl;
+				cin >> browse;
+				
+				if (browse == "1") {
+					handle_results(results);
+					system("pause");
+					//response = "Y";
+				}
+				if (browse == "2") {
+					resume = false;
+					response = "Y";
+				}
+				if (browse == "3")
+				{
+					response = "N";
+					resume = false;
+
+				}
+
+			} while (resume);
 
 		}
 
-		results.clear();
+		//results.clear();
 		
-		cout << endl << "Would you like to continue? (Y/N)" << endl;
-		query.clear();
+		//cout << endl << "Would you like to continue? (Y/N)" << endl;
+		//query.clear();
 			
-		cin >> response;
+		
 	} while (response == "Y");
 
 	system("CLS");		//clear screen
@@ -148,14 +203,18 @@ vector<string> handle_input(string input, Trie* h) {
 	//x.substr()
 	if (input.empty()) {
 		cout << "ERROR: input is empty!" << endl;
+		system("pause");
 		return temp;
 	}
+	//else {
+	//	//cout << "input is not empty" << endl;
+	//}
 	
 	for (int i = 0; i < input.size() -1; i++)
 	{
 		x = input.substr(i, 2);
 		if (x == "OR") {
-			cout << "has OR !" << endl;
+			//cout << "has OR !" << endl;
 			input.replace(i, 3, "");
 
 			indexOr = i;
@@ -168,7 +227,7 @@ vector<string> handle_input(string input, Trie* h) {
 		x = input.substr(i, 3);
 		if (x == "AND")
 		{
-			cout<<"Has AND !" << endl;
+			//cout<<"Has AND !" << endl;
 			input.replace(i, 4,"");
 			indexAnd = i;
 			hasAnd = true;
@@ -181,6 +240,18 @@ vector<string> handle_input(string input, Trie* h) {
 	if (hasOr && indexOr == -1)
 	{
 		temp = h->search(input);
+		/*stringstream s(input);
+		getline(s, input);*/
+		
+		//cout << "in the first conditional" << endl;
+		//cout << "input = " << input << endl;
+		//vector<string> tempA = h->search(input);
+		//cout << "Therefore, temp = " << endl;
+		/*for ( auto x : tempA )
+		{
+			cout << x << endl;
+		}*/
+		//cout << "done printing" << endl;
 	}
 	//in the case that OR is written explicitly
 	if (hasOr && indexOr != -1)
@@ -240,10 +311,7 @@ vector<string> handle_input(string input, Trie* h) {
 
 void handle_results(vector<string>& results)
 {
-	for (auto x : results) {
-		cout << x << endl;
-		umap[x].incrementImpressions();		//incrementing impressions and updating pageScore
-	}
+	
 	string choice = "";
 	cout << "Which website would you like to visit?" << endl;
 
@@ -254,14 +322,12 @@ void handle_results(vector<string>& results)
 	}
 	else {
 		umap[choice].incrementClicks();		//incrementing clicks after choice
-		cout << "You are visiting: " << choice;
+		cout << "You are visiting: " << choice << endl;
 	}
 }
 
 bool compareScore(string i1, string i2) {
 	try {
-		/*cout << "i1: " << i1 << endl;
-		cout << "i2: " << i2 << endl;*/
 		return (umap[i1].getScore() > umap[i2].getScore());
 		throw i1;
 	}
