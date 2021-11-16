@@ -8,7 +8,7 @@ Graph::Graph(vector<Edge> const	& edges, int N)
 	bool* exists = new bool[_n];
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
-		temp[i] = 1.0 / WEB_SIZE;
+		currPr[i] = 1.0 / WEB_SIZE;
 	}
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
@@ -16,7 +16,7 @@ Graph::Graph(vector<Edge> const	& edges, int N)
 	}
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
-		oldTemp[i] = temp[i];
+		oldPr[i] = currPr[i];
 	}
 
 	for (int i = 0; i < WEB_SIZE; i++)
@@ -54,6 +54,24 @@ Graph::Graph(vector<Edge> const	& edges, int N)
 
 			adjList[source_number].push_back(edges[i].dest.getUrl());
 	}
+
+	for (int i = 0; i < WEB_SIZE; i++)
+	{
+		//cout << "adjList[i][0].begin() = " << adjList[i][0] << "; adjList[i].size() = " <<adjList[i].size()<<endl;
+		if (adjList[i].size() == 1)
+		{
+			string sink = adjList[i][0];
+			for (int j = 0; j< WEB_SIZE; j++)
+			{
+				string vertex = adjList[j][0];
+				if (vertex != sink)
+				{
+					adjList[i].push_back(vertex);
+				}
+
+			}
+		}
+	}
 }
 
 void Graph::addEdge(Edge const& newEdge)
@@ -81,17 +99,25 @@ void Graph::printGraph()
 	}
 }
 
+void Graph::normalizePr()
+{
+	for (int i = 0; i < WEB_SIZE; i++)
+	{
+		currPr[i] = currPr[i] + ((1-d)/WEB_SIZE);
+		cout << "currPr[i] = "<<currPr[i] << endl;
+	}
+	
+}
+
+
+
 void Graph::PageRank()
 {
 	ofstream myFile;
 	//cout << endl << "PageRank initiating..." << endl;
 	for (int i = 0; i < _n; i++)
 	{
-		
-
-		//cout << endl<<"In the i-th iteration for i = " << i;
-		
-		
+		//cout << endl<<"In the i-th iteration for i = " << i;	
 		
 		string root;
 		double numerator = 0;
@@ -104,61 +130,54 @@ void Graph::PageRank()
 			if (x == adjList[i].begin())
 			{
 				root = *x;
-				/*cout << "For the WebPage: " << *x << " with vertexNo = " << indexOfX << endl;
-				cout << "indexNo for the root = " << map[root] << endl;*/
-				
-				if (adjList[map[root]].size() == 1) {
-					//cout << "true!" << endl;
-					oldTemp[map[root]] = temp[map[root]];
-					temp[map[root]] += temp[map[root]];
-					//cout <<"pageRank for root with no outgoing links = " <<temp[map[root]] << endl;
-				}
-					
+				//visited[map[root]] = true;
 			}
-			
 			
 			else 
 			{
-				numerator = oldTemp[map[root]];
+				numerator = oldPr[map[root]];
 				//cout << "numerator= " << numerator << endl;
-				childrenCount = adjList[map[root]].size() -1;
-				//cout << "childrenCount = " << childrenCount << endl;
+				childrenCount = adjList[map[root]].size() - 1;
 
-				//cout << "For the page: " << *x <<" with vertexNo = "<< indexOfX << endl;
 
-				if(!pointedTo[indexOfX] && adjList[indexOfX].size() >= 1){
+				if(!pointedTo[indexOfX] && !visited[indexOfX]){
+					visited[indexOfX] = true;
+
 					//cout << "in the if statement!" << endl;
 					pointedTo[indexOfX] = true;
 					//cout << "index of X: "<<indexOfX << endl;
-					visited[indexOfX] = true;
+					//visited[indexOfX] = true;
 
-					oldTemp[indexOfX] = temp[indexOfX];
-					//cout << "oldTemp of X: " << oldTemp[indexOfX] << endl;
-					temp[indexOfX] = numerator / childrenCount;
-					//cout << "temp of X: " << temp[indexOfX] << endl;
+					oldPr[indexOfX] = currPr[indexOfX];
+					//cout << "oldPr of X: " << oldPr[indexOfX] << endl;
+					currPr[indexOfX] = (numerator / childrenCount);
+					//cout << "currPr of X: " << currPr[indexOfX] << endl;
 				}
 
 				else {
-					//oldTemp[x->getVertexNo()] = x->getPageRank();
+					//oldPr[x->getVertexNo()] = x->getPageRank();
 					//cout << "In the else statement" << endl;
 
-					//oldTemp[indexOfX] = temp[indexOfX];
-					//cout << "oldTemp of X: " << oldTemp[indexOfX] << endl;
+					oldPr[indexOfX] = currPr[indexOfX];
+					//cout << "oldPr of X: " << oldPr[indexOfX] << endl;
 
-					temp[indexOfX] += (numerator / childrenCount);
+					currPr[indexOfX] += (numerator / childrenCount);
 					
 
-					//cout << "pageRank after incrementation: "<<temp[indexOfX]<<endl;
+					//cout << "pageRank after incrementation: "<<currPr[indexOfX]<<endl;
 					
 				}
 				
 				
 			}
-			if (!visited[indexOfX]) {
-				temp[indexOfX] = 0;
-			}
+			/*if (!visited[indexOfX]) {
+
+				currPr[indexOfX] = 0;
+			}*/
 		}
+		
 	}
+	normalizePr();
 	
 
 	//cout << endl << "printing pageRanks" << endl;
@@ -170,9 +189,9 @@ void Graph::PageRank()
 		//cout << "in iteration #: " << i << endl;
 
 		string url = it->first;
-		double pr = temp[i];
+		double pr = currPr[i];
 		//cout << "iterator = " << url << ", ";
-		//cout << "temp[i] = " << pr << endl;
+		//cout << "currPr[i] = " << pr << endl;
 		it++;
 		
 		myFile << url << "," << pr << endl;

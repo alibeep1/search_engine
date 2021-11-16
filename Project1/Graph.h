@@ -18,6 +18,7 @@ class Graph
 private:
 	int _n;
 public:
+	double d = 0.85;
 	//Is our adjacency List of string values
 	vector<vector<string>> adjList;
 
@@ -25,13 +26,13 @@ public:
 	unordered_map<string, int> map;
 
 	//Holds the values for the (i)th iteration's pageRanks
-	double temp[WEB_SIZE];
+	double currPr[WEB_SIZE];
 
 	//Checks whether a node was visited previously as a destination 
 	bool visited[WEB_SIZE];
 
 	//Holds the (i-1)th iteration's pageRanks
-	double oldTemp[WEB_SIZE];
+	double oldPr[WEB_SIZE];
 
 	//Checks whether a node is pointed to by any other node
 	bool pointedTo[WEB_SIZE];
@@ -43,6 +44,8 @@ public:
 
 	//prints the layout of the graph (adjacency list)
 	void printGraph();
+
+	void normalizePr();
 
 	//Calculates pageRanks for each WebPage and writes the output to pagerank.csv
 	void PageRank();

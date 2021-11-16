@@ -9,10 +9,7 @@ WebPage::WebPage(const string url, int vertexNo) {
 
     this->url = url;
     pageRank = (1.0 / WEB_SIZE);
-    //this->clicks = clicks;
-    //ctr = clicks/ this->impressions;
-    //cout << this->clicks;
-    //cout << "ctr = " << ctr << endl;
+    
 }
 
 //should execute when the page appears (impressions) in the results after a query
