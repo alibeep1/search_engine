@@ -8,7 +8,7 @@ Graph::Graph(vector<Edge> const	& edges, int N)
 	bool* exists = new bool[_n];
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
-		currPr[i] = 1.0 / WEB_SIZE;
+		currPr[i] = 0;
 	}
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
@@ -16,7 +16,7 @@ Graph::Graph(vector<Edge> const	& edges, int N)
 	}
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
-		oldPr[i] = currPr[i];
+		oldPr[i] = 1.0 / WEB_SIZE;
 	}
 
 	for (int i = 0; i < WEB_SIZE; i++)
@@ -103,7 +103,9 @@ void Graph::normalizePr()
 {
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
-		currPr[i] = currPr[i] + ((1-d)/WEB_SIZE);
+		oldPr[i] = currPr[i];
+		currPr[i] *= 0.85;
+		currPr[i] += 0.15 / WEB_SIZE;
 		cout << "currPr[i] = "<<currPr[i] << endl;
 	}
 	
@@ -115,67 +117,39 @@ void Graph::PageRank()
 {
 	ofstream myFile;
 	//cout << endl << "PageRank initiating..." << endl;
+	double c;
+	string root;
 	for (int i = 0; i < _n; i++)
 	{
 		//cout << endl<<"In the i-th iteration for i = " << i;	
 		
-		string root;
-		double numerator = 0;
-		double childrenCount = 0;
-		int indexOfX;
-		
+		//string root;
+		//double root_pr = 0;
+
+		root = adjList[i][0];			// the name of the root
+		int rootIndex = map[root];		//the index of the root
+		c = adjList[i].size() - 1;		//number of outgoing links from the root
+		pointedTo[rootIndex] = true;
+		//cout << "for the root = " << root << ", ";
+
 		for (auto x = adjList[i].begin(); x != adjList[i].end(); x++)
 		{
-			indexOfX = map[*x];
-			if (x == adjList[i].begin())
-			{
-				root = *x;
-				//visited[map[root]] = true;
+				int indexOfX = map[*x];
+			if (*x != root && !pointedTo[indexOfX]) {
+
+
+				currPr[indexOfX] += oldPr[rootIndex] / c;
+
+			}
+			if (*x != root && pointedTo[indexOfX]) {
+				oldPr[indexOfX] = currPr[indexOfX];
+
+				currPr[indexOfX] += oldPr[rootIndex] / c;
+
 			}
 			
-			else 
-			{
-				numerator = oldPr[map[root]];
-				//cout << "numerator= " << numerator << endl;
-				childrenCount = adjList[map[root]].size() - 1;
-
-
-				if(!pointedTo[indexOfX] && !visited[indexOfX]){
-					visited[indexOfX] = true;
-
-					//cout << "in the if statement!" << endl;
-					pointedTo[indexOfX] = true;
-					//cout << "index of X: "<<indexOfX << endl;
-					//visited[indexOfX] = true;
-
-					oldPr[indexOfX] = currPr[indexOfX];
-					//cout << "oldPr of X: " << oldPr[indexOfX] << endl;
-					currPr[indexOfX] = (numerator / childrenCount);
-					//cout << "currPr of X: " << currPr[indexOfX] << endl;
-				}
-
-				else {
-					//oldPr[x->getVertexNo()] = x->getPageRank();
-					//cout << "In the else statement" << endl;
-
-					oldPr[indexOfX] = currPr[indexOfX];
-					//cout << "oldPr of X: " << oldPr[indexOfX] << endl;
-
-					currPr[indexOfX] += (numerator / childrenCount);
-					
-
-					//cout << "pageRank after incrementation: "<<currPr[indexOfX]<<endl;
-					
-				}
-				
-				
-			}
-			/*if (!visited[indexOfX]) {
-
-				currPr[indexOfX] = 0;
-			}*/
 		}
-		
+
 	}
 	normalizePr();
 	

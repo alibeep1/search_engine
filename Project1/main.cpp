@@ -78,16 +78,19 @@ int main() {
 	vector<Edge> edges = read_web_graph(umap);
 
 	Graph graph(edges, WEB_SIZE);		//web graph
-	//graph.printGraph();
+	graph.printGraph();
 
 	//graph.printGraph();
-	//for (int i = 0; i < 100; i++)
-	//{
-	//	cout << "For test# " << i + 1 << endl;
-	//}
-	graph.PageRank();
+	/*for (int i = 0; i < 100; i++)
+	{
+		cout << "For test# " << i + 1 << endl;
+	}*/
+		graph.PageRank();
 	
+		//graph.PageRank();
+		//graph.normalizePr();
 	read_pageRank(umap);
+
 
 	printMap(umap);
 	double sumOfPr = 0;
