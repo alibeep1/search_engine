@@ -89,6 +89,8 @@ void WebPage::setUrl(string url)
 void WebPage::incrementPageRank(double pr)
 {
     this->pageRank += pr;
+    
+
 }
 
 void WebPage::setImpressions(double impressions)

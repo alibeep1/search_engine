@@ -25,6 +25,12 @@ void read_url_keywords(unordered_map<string, WebPage>& umap, Trie* h);
 //Reads and assigns impressions to websites by indexing them via their url
 void read_impressions(unordered_map<string, WebPage>&  umap);
 
+void read_clicks(unordered_map<string, WebPage>& umap);
+
+void updateClicksFile();
+
+void updateImpressionsFile();
+
 //Returns a vector of edges whose source is the first webpage (appearing in the line) and destination is the second one after the comma
 vector<Edge> read_web_graph(unordered_map<string, WebPage>& const umap);
 
@@ -74,6 +80,7 @@ int main() {
 	read_url_keywords(umap,head);		
 	
 	read_impressions(umap);
+	read_clicks(umap);
 
 	vector<Edge> edges = read_web_graph(umap);
 
@@ -184,44 +191,120 @@ int main() {
 
 		}
 
-		//results.clear();
-		
-		//cout << endl << "Would you like to continue? (Y/N)" << endl;
-		//query.clear();
-			
-		
 	} while (response == "Y");
 
+
+	
+
+	
 	system("CLS");		//clear screen
 	
 	printMap(umap);		//keep for debugging purposes
 
+	updateImpressionsFile();
 
+	updateClicksFile();
+
+	system("pause");
 
 	return 0;
 }
+
+void updateClicksFile()
+{
+	unordered_map<string, WebPage>::iterator it = umap.begin();
+	ofstream clicks;
+
+	clicks.open("clicks.csv");
+
+	//it = umap.begin();
+	for (int i = 0; i < WEB_SIZE; i++)
+	{
+		clicks << it->first << "," << it->second.getClicks() << endl;
+		it++;
+	}
+	clicks.close();
+}
+
+void updateImpressionsFile()
+{
+	unordered_map<string, WebPage>::iterator it = umap.begin();
+	ofstream myFile;
+	myFile.open("impressions.csv");
+
+	for (int i = 0; i < WEB_SIZE; i++)
+	{
+
+		myFile << it->first << "," << it->second.getImpressions() << endl;
+		it++;
+	}
+	myFile.close();
+}
+
+void read_clicks(unordered_map<string, WebPage>& umap)
+{
+	ifstream myFile;
+
+	myFile.open("clicks.csv");
+
+
+	string line, word;
+
+
+	while (myFile.good())
+	{
+
+
+		getline(myFile, line, '\n');
+
+		stringstream s(line);
+
+		int wordCounter = 0;
+		string temp_word;
+		while (getline(s, word, ','))
+		{
+
+
+			if (wordCounter == 0)
+			{
+				temp_word = word;
+			}
+			else {
+				/*cout << "word = " << word << endl;
+				cout << "umap[temp_word] = " << umap[temp_word].getUrl() << endl;*/
+				umap[temp_word].setClicks(stof(word));
+			}
+
+
+			wordCounter++;
+			//cout << "inner loop" << endl;
+		}
+
+		//cout << "outer loop" << endl;
+	}
+	myFile.close();
+}
+
 
 vector<string> handle_input(string input, Trie* h) {
 	vector<string> temp;
 
 	set<string> set1;
 
-	//int n = 0;
+	
 	bool hasOr = true;
 	int indexOr = -1;
 
 	bool hasAnd = false;
 	int indexAnd = -1;
 	string x = "";
-	//x.substr()
+	
 	if (input.empty()) {
 		cout << "ERROR: input is empty!" << endl;
 		system("pause");
 		return temp;
 	}
-	//else {
-	//	//cout << "input is not empty" << endl;
-	//}
+	
 	
 	for (int i = 0; i < input.size() -1; i++)
 	{
@@ -253,18 +336,7 @@ vector<string> handle_input(string input, Trie* h) {
 	if (hasOr && indexOr == -1)
 	{
 		temp = h->search(input);
-		/*stringstream s(input);
-		getline(s, input);*/
 		
-		//cout << "in the first conditional" << endl;
-		//cout << "input = " << input << endl;
-		//vector<string> tempA = h->search(input);
-		//cout << "Therefore, temp = " << endl;
-		/*for ( auto x : tempA )
-		{
-			cout << x << endl;
-		}*/
-		//cout << "done printing" << endl;
 	}
 	//in the case that OR is written explicitly
 	if (hasOr && indexOr != -1)
@@ -280,9 +352,7 @@ vector<string> handle_input(string input, Trie* h) {
 				//to disallow duplicates
 				setA.insert(d);
 			}
-			//temp(s.begin(), s.end());
-			//vector<string> altTemp(s.begin(), s.end());
-			//temp = altTemp;
+			
 		}
 			for (auto x: setA)
 			{
@@ -293,14 +363,12 @@ vector<string> handle_input(string input, Trie* h) {
 	if (hasAnd)
 	{
 		unordered_map<string, int> tempMap;
-		
 
 		set<string> setB;
 		string word;
 		stringstream s(input);
 		while (getline(s, word, ' '))
 		{
-
 			vector<string> temp1 = h->search(word);
 			set<string>::iterator it = setB.begin();
 			for (auto x : temp1)
@@ -312,9 +380,6 @@ vector<string> handle_input(string input, Trie* h) {
 				setB.insert(x);
 				//it++;
 			}
-
-			//cout << "printing temp1..." << endl;
-			
 		}
 	}
 
@@ -354,7 +419,7 @@ bool compareScore(string i1, string i2) {
 void read_pageRank(unordered_map <string, WebPage>& umap) {
 	ifstream myFile;
 
-	myFile.open("F:/AUC/21-22/Analysis and Design of Algorithms - Lab/search_engine/Project1/pagerank.csv");
+	myFile.open("pagerank.csv");
 
 
 	string line, word;
@@ -398,7 +463,7 @@ void read_impressions(unordered_map<string, WebPage>& umap)
 {
 	ifstream myFile;
 
-	myFile.open("F:/AUC/21-22/Analysis and Design of Algorithms - Lab/search_engine/Project1/impressions.csv");
+	myFile.open("impressions.csv");
 
 
 	string line, word;
@@ -444,7 +509,7 @@ vector<Edge> read_web_graph(unordered_map<string, WebPage>& const umap)
 	vector<Edge> edges;
 	
 	ifstream myfile;
-	myfile.open("f:/auc/21-22/analysis and design of algorithms - lab/search_engine/project1/web_graph.csv");
+	myfile.open("web_graph.csv");
 
 	string line, word;
 
@@ -490,7 +555,7 @@ void read_url_keywords(unordered_map<string, WebPage>& umap, Trie* h)
 {
 	ifstream myFile;
 
-	myFile.open("F:/AUC/21-22/Analysis and Design of Algorithms - Lab/search_engine/Project1/keywords.csv");
+	myFile.open("keywords.csv");
 
 	
 	string line, word;
