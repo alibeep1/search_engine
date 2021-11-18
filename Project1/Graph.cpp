@@ -99,29 +99,11 @@ void Graph::printGraph()
 	}
 }
 
-void Graph::normalizePr()
+void Graph::copyNewPrToOld()
 {
-	//if (executed_pr)
-	//{
-		for (int i = 0; i < WEB_SIZE; i++)
-		{
-
-			/*oldPr[i] *= d;
-			oldPr[i] += 0.15 / WEB_SIZE;*/
-			oldPr[i] = currPr[i];
-		}
-	//	executed_pr = false;
-	//}
-	//else {
-	//	for (int i = 0; i < WEB_SIZE; i++)
-	//	{
-
-	//		cout << "currPr[i] = " << currPr[i] << endl;
-	//	}
-	//}
-	
-	
-
+	for (int i = 0; i < WEB_SIZE; i++){
+		oldPr[i] = currPr[i];
+	}
 }
 
 
@@ -140,63 +122,46 @@ void Graph::PageRank()
 		visitedAsNode[i] = false;
 		currPr[i] = 0;
 	}
-	//bool first_local_run = false;
+	
 	for (int i = 0; i < _n; i++)
 	{
-		string root = adjList[i][0];
-		int rootIndex = map[root];
-		c = adjList[i].size() - 1;
-		//pr_Root = first_run ? oldPr[rootIndex] / c : currPr[rootIndex] / c;
-		//pr_Root = first_run ? oldPr[rootIndex] / c : currPr[rootIndex] / c;
-		//pr_Root = oldPr[rootIndex] / c ;
-		//visitedAsRoot[rootIndex] = true;
-		cout << "for the root: " << root << endl << endl;
+		string root = adjList[i][0];	//stores the name of the source being visited for the current iteration
+		int rootIndex = map[root];		//index of the root
+		c = adjList[i].size() - 1;		//stores the number of outgoing links or edges from the current root
+
 		for (auto x = adjList[i].begin(); x != adjList[i].end(); x++)
 		{
+			int xIndex = map[*x];		//index of the node being visited currently
 
-			int xIndex = map[*x];
-			if (*x != root) {
-				cout << "for the site: " << *x << endl;
-				//visitedAsNode[xIndex] = true;
-				if (visitedAsNode[xIndex] == false)
+			if (*x != root) {		//given that the current node is not the root node, do...
+
+				if (visitedAsNode[xIndex] == false)		//If it is the first time visiting the node, do...
 				{
-					cout << "oldPr[root] = " << oldPr[rootIndex] << "; c = " << c << endl;
-					visitedAsNode[xIndex] = true;
-					currPr[xIndex] = currPr[xIndex] + (0.85 * (oldPr[rootIndex] / c)) + (0.15 / WEB_SIZE);
+					visitedAsNode[xIndex] = true;		//mark this node as visited
 
+					//increment current page rank by the product of the damping factor and the old pagerank of the source + constant of normalization
+					currPr[xIndex] = currPr[xIndex] + (0.85 * (oldPr[rootIndex] / c)) + (0.15 / WEB_SIZE);		
 				}
+				//if the current node had been previously visited as a destination, then do...
 				else {
-					cout << "in the else statement" << endl;
+
+					//increment current pageRank by [...] BUT DON'T add to it the constant of normalization
 					currPr[xIndex] = currPr[xIndex] + (0.85 * (oldPr[rootIndex] / c));
-
-
 				}
-
-
 			}
-			//cout << "PageRanks:" << endl;
-			//for (int i = 0; i < WEB_SIZE; i++)
-			//{
-			//	cout << "pageRank for i = " << i << " is equal to " << currPr[i] << endl;
-			//}
-			//	}
-			//	//first_local_run = false;
 		}
 	}
-		//normalizePr();
-		normalizePr();
-	//cout << endl << "printing pageRanks" << endl;
+
+	copyNewPrToOld();
+	
+	//Write the PageRank values to a CSV file
 	myFile.open("pagerank.csv");
 
 	unordered_map<string, int>::iterator it = map.begin();
 	for (int i = 0; i < _n; i++)
 	{
-		//cout << "in iteration #: " << i << endl;
-
 		string url = it->first;
 		double pr = currPr[i];
-		//cout << "iterator = " << url << ", ";
-		//cout << "currPr[i] = " << pr << endl;
 		it++;
 
 		myFile << url << "," << pr << endl;
@@ -204,5 +169,5 @@ void Graph::PageRank()
 	myFile.close();
 
 	first_run = false;
-	//cout << endl << "Executed PageRank" << endl;
+	
 }

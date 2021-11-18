@@ -88,7 +88,7 @@ int main() {
 
 	
 		//graph.PageRank();
-		//graph.normalizePr();
+		//graph.copyNewPrToOld();
 	read_pageRank(umap);
 
 

@@ -41,13 +41,14 @@ public:
 
 	Graph(vector<Edge> const& edges, int N);
 
-	//unnecessary since the graph is static
+	//Unnecessary since the graph is static
 	void addEdge(Edge const& newEdge);
 
-	//prints the layout of the graph (adjacency list)
+	//Prints the layout of the graph (adjacency list)
 	void printGraph();
 
-	void normalizePr();
+	//Copies "currPr" values to the "oldPr" array for subsequent, i-th iterations of PageRank();
+	void copyNewPrToOld();
 
 	//Calculates pageRanks for each WebPage and writes the output to pagerank.csv
 	void PageRank();
