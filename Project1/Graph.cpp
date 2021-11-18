@@ -1,8 +1,8 @@
 #include "Graph.h"
 
-Graph::Graph(vector<Edge> const	& edges, int N)
+Graph::Graph(vector<Edge> const& edges, int N)
 {
-	
+
 	_n = N;
 	adjList.resize(_n);
 	bool* exists = new bool[_n];
@@ -12,7 +12,7 @@ Graph::Graph(vector<Edge> const	& edges, int N)
 	}
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
-		visited[i] = 0;
+		visitedAsNode[i] = false;
 	}
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
@@ -21,7 +21,7 @@ Graph::Graph(vector<Edge> const	& edges, int N)
 
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
-		pointedTo[i] = 0;
+		visitedAsRoot[i] = false;
 	}
 	for (int i = 0; i < _n; i++)
 	{
@@ -39,7 +39,7 @@ Graph::Graph(vector<Edge> const	& edges, int N)
 		if (exists[source_number] == 0) {
 			/*cout << "edges["<< i<< "].src = "<<edges[i].src.getUrl()  << endl;*/
 			adjList[source_number].push_back(edges[i].src.getUrl());
-			
+
 			exists[source_number] = true;
 		}
 
@@ -48,11 +48,11 @@ Graph::Graph(vector<Edge> const	& edges, int N)
 			adjList[dest_number].push_back(edges[i].dest.getUrl());
 
 			exists[dest_number] = true;
-			
-		}
-		
 
-			adjList[source_number].push_back(edges[i].dest.getUrl());
+		}
+
+
+		adjList[source_number].push_back(edges[i].dest.getUrl());
 	}
 
 	for (int i = 0; i < WEB_SIZE; i++)
@@ -61,7 +61,7 @@ Graph::Graph(vector<Edge> const	& edges, int N)
 		if (adjList[i].size() == 1)
 		{
 			string sink = adjList[i][0];
-			for (int j = 0; j< WEB_SIZE; j++)
+			for (int j = 0; j < WEB_SIZE; j++)
 			{
 				string vertex = adjList[j][0];
 				if (vertex != sink)
@@ -81,10 +81,10 @@ void Graph::addEdge(Edge const& newEdge)
 
 void Graph::printGraph()
 {
-	cout << endl<<"printing Graph" << endl;
+	cout << endl << "printing Graph" << endl;
 	for (int i = 0; i < _n; i++)
 	{
-		
+
 		for (auto x = adjList[i].begin(); x != adjList[i].end(); x++)
 		{
 			if (x == adjList[i].begin())
@@ -101,62 +101,93 @@ void Graph::printGraph()
 
 void Graph::normalizePr()
 {
-	for (int i = 0; i < WEB_SIZE; i++)
-	{
-		oldPr[i] = currPr[i];
-		currPr[i] *= 0.85;
-		currPr[i] += 0.15 / WEB_SIZE;
-		cout << "currPr[i] = "<<currPr[i] << endl;
-	}
+	//if (executed_pr)
+	//{
+		for (int i = 0; i < WEB_SIZE; i++)
+		{
+
+			/*oldPr[i] *= d;
+			oldPr[i] += 0.15 / WEB_SIZE;*/
+			oldPr[i] = currPr[i];
+		}
+	//	executed_pr = false;
+	//}
+	//else {
+	//	for (int i = 0; i < WEB_SIZE; i++)
+	//	{
+
+	//		cout << "currPr[i] = " << currPr[i] << endl;
+	//	}
+	//}
 	
+	
+
 }
 
 
 
 void Graph::PageRank()
 {
+
 	ofstream myFile;
 	//cout << endl << "PageRank initiating..." << endl;
 	double c;
 	string root;
+	double pr_Root;
+	
+	for (int i = 0; i < WEB_SIZE; i++)
+	{
+		visitedAsNode[i] = false;
+		currPr[i] = 0;
+	}
+	//bool first_local_run = false;
 	for (int i = 0; i < _n; i++)
 	{
-		//cout << endl<<"In the i-th iteration for i = " << i;	
-		
-		//string root;
-		//double root_pr = 0;
-
-		root = adjList[i][0];			// the name of the root
-		int rootIndex = map[root];		//the index of the root
-		c = adjList[i].size() - 1;		//number of outgoing links from the root
-		pointedTo[rootIndex] = true;
-		//cout << "for the root = " << root << ", ";
-
+		string root = adjList[i][0];
+		int rootIndex = map[root];
+		c = adjList[i].size() - 1;
+		//pr_Root = first_run ? oldPr[rootIndex] / c : currPr[rootIndex] / c;
+		//pr_Root = first_run ? oldPr[rootIndex] / c : currPr[rootIndex] / c;
+		//pr_Root = oldPr[rootIndex] / c ;
+		//visitedAsRoot[rootIndex] = true;
+		cout << "for the root: " << root << endl << endl;
 		for (auto x = adjList[i].begin(); x != adjList[i].end(); x++)
 		{
-				int indexOfX = map[*x];
-			if (*x != root && !pointedTo[indexOfX]) {
+
+			int xIndex = map[*x];
+			if (*x != root) {
+				cout << "for the site: " << *x << endl;
+				//visitedAsNode[xIndex] = true;
+				if (visitedAsNode[xIndex] == false)
+				{
+					cout << "oldPr[root] = " << oldPr[rootIndex] << "; c = " << c << endl;
+					visitedAsNode[xIndex] = true;
+					currPr[xIndex] = currPr[xIndex] + (0.85 * (oldPr[rootIndex] / c)) + (0.15 / WEB_SIZE);
+
+				}
+				else {
+					cout << "in the else statement" << endl;
+					currPr[xIndex] = currPr[xIndex] + (0.85 * (oldPr[rootIndex] / c));
 
 
-				currPr[indexOfX] += oldPr[rootIndex] / c;
+				}
+
 
 			}
-			if (*x != root && pointedTo[indexOfX]) {
-				oldPr[indexOfX] = currPr[indexOfX];
-
-				currPr[indexOfX] += oldPr[rootIndex] / c;
-
-			}
-			
+			//cout << "PageRanks:" << endl;
+			//for (int i = 0; i < WEB_SIZE; i++)
+			//{
+			//	cout << "pageRank for i = " << i << " is equal to " << currPr[i] << endl;
+			//}
+			//	}
+			//	//first_local_run = false;
 		}
-
 	}
-	normalizePr();
-	
-
+		//normalizePr();
+		normalizePr();
 	//cout << endl << "printing pageRanks" << endl;
 	myFile.open("pagerank.csv");
-	
+
 	unordered_map<string, int>::iterator it = map.begin();
 	for (int i = 0; i < _n; i++)
 	{
@@ -167,11 +198,11 @@ void Graph::PageRank()
 		//cout << "iterator = " << url << ", ";
 		//cout << "currPr[i] = " << pr << endl;
 		it++;
-		
+
 		myFile << url << "," << pr << endl;
 	}
 	myFile.close();
-	
+
+	first_run = false;
 	//cout << endl << "Executed PageRank" << endl;
 }
-

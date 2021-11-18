@@ -78,14 +78,14 @@ int main() {
 	vector<Edge> edges = read_web_graph(umap);
 
 	Graph graph(edges, WEB_SIZE);		//web graph
+	
+	for (int i = 0; i < 100; i++)
+	{
+		graph.PageRank();
+
+	}
 	graph.printGraph();
 
-	//graph.printGraph();
-	/*for (int i = 0; i < 100; i++)
-	{
-		cout << "For test# " << i + 1 << endl;
-	}*/
-		graph.PageRank();
 	
 		//graph.PageRank();
 		//graph.normalizePr();
@@ -93,13 +93,13 @@ int main() {
 
 
 	printMap(umap);
-	double sumOfPr = 0;
+	/*double sumOfPr = 0;
 	for (auto x : umap)
 	{
 		sumOfPr += x.second.getPageRank();
-	}
+	}*/
 
-	cout << endl << "sum of PageRanks adds up to: " << sumOfPr << endl;
+	//cout << endl << "sum of PageRanks adds up to: " << sumOfPr << endl;
 
 	//indicates whether the user prefers to terminate or continue browsing
 	string response;
@@ -108,93 +108,93 @@ int main() {
 	vector<string> results;
 
 	//stores the search query
-	//do
-	//{
-	//	string query ="";
-	//	//system("CLS");
-	//	cout << "Please enter your search query:";
+	do
+	{
+		string query ="";
+		//system("CLS");
+		cout << "Please enter your search query:";
 
-	//	//clearing whitespace from the buffer such that the getline doesn't skip reading user input for subsequent iterations
-	//	getline(cin>>ws, query);
-	//	cout <<"query = "<< query << endl;
-	//	//cout << "query = " << query << endl;
+		//clearing whitespace from the buffer such that the getline doesn't skip reading user input for subsequent iterations
+		getline(cin>>ws, query);
+		cout <<"query = "<< query << endl;
+		//cout << "query = " << query << endl;
 
-	//	results = handle_input(query, head);
-	//	
-	//	if (results.empty()) {
-	//		cout << "Not found!" << endl;
-	//		system("pause");
-	//	}
-	//	else {
-	//		//cout << "in the else" << endl;
-	//		bool resume = true;
-	//		string browse;
+		results = handle_input(query, head);
+		
+		if (results.empty()) {
+			cout << "Not found!" << endl;
+			system("pause");
+		}
+		else {
+			//cout << "in the else" << endl;
+			bool resume = true;
+			string browse;
 
-	//		//sorts the results in descending order (from greatest to least) according to their pageScore
-	//		sort(results.begin(), results.end(), compareScore);
+			//sorts the results in descending order (from greatest to least) according to their pageScore
+			sort(results.begin(), results.end(), compareScore);
 
-	//		for (auto x : results) {
-	//			
-	//			umap[x].incrementImpressions();		//incrementing impressions and updating pageScore
-	//		}
-	//		do
-	//		{
-	//			//system("CLS");
-	//			cout << "Search Results:" << endl;
-	//			for (auto x : results) {
-	//				cout << "  " << x << endl;
-	//			}
-	//			cout
-	//				<< endl
-	//				<< left
-	//				<< setw(5)
-	//				<< "Would you like to: "
-	//				<< endl
-	//				<< left
-	//				<< setw(5)
-	//				<< "1. choose a webpage to open"
-	//				<< endl
-	//				<< left
-	//				<< setw(5)
-	//				<< "2. perform a new search"
-	//				<< endl
-	//				<< left
-	//				<< setw(5)
-	//				<< "3. Exit"
-	//				<< endl;
-	//			cin >> browse;
-	//			
-	//			if (browse == "1") {
-	//				handle_results(results);
-	//				system("pause");
-	//				//response = "Y";
-	//			}
-	//			if (browse == "2") {
-	//				resume = false;
-	//				response = "Y";
-	//			}
-	//			if (browse == "3")
-	//			{
-	//				response = "N";
-	//				resume = false;
+			for (auto x : results) {
+				
+				umap[x].incrementImpressions();		//incrementing impressions and updating pageScore
+			}
+			do
+			{
+				//system("CLS");
+				cout << "Search Results:" << endl;
+				for (auto x : results) {
+					cout << "  " << x << endl;
+				}
+				cout
+					<< endl
+					<< left
+					<< setw(5)
+					<< "Would you like to: "
+					<< endl
+					<< left
+					<< setw(5)
+					<< "1. choose a webpage to open"
+					<< endl
+					<< left
+					<< setw(5)
+					<< "2. perform a new search"
+					<< endl
+					<< left
+					<< setw(5)
+					<< "3. Exit"
+					<< endl;
+				cin >> browse;
+				
+				if (browse == "1") {
+					handle_results(results);
+					system("pause");
+					//response = "Y";
+				}
+				if (browse == "2") {
+					resume = false;
+					response = "Y";
+				}
+				if (browse == "3")
+				{
+					response = "N";
+					resume = false;
 
-	//			}
+				}
 
-	//		} while (resume);
+			} while (resume);
 
-	//	}
+		}
 
-	//	//results.clear();
-	//	
-	//	//cout << endl << "Would you like to continue? (Y/N)" << endl;
-	//	//query.clear();
-	//		
-	//	
-	//} while (response == "Y");
+		//results.clear();
+		
+		//cout << endl << "Would you like to continue? (Y/N)" << endl;
+		//query.clear();
+			
+		
+	} while (response == "Y");
 
-	//system("CLS");		//clear screen
-	//
-	//printMap(umap);		//keep for debugging purposes
+	system("CLS");		//clear screen
+	
+	printMap(umap);		//keep for debugging purposes
 
 
 
