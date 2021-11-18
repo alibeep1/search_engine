@@ -115,7 +115,7 @@ void Graph::PageRank()
 	//cout << endl << "PageRank initiating..." << endl;
 	double c;
 	string root;
-	double pr_Root;
+	
 	
 	for (int i = 0; i < WEB_SIZE; i++)
 	{

@@ -148,8 +148,11 @@ int main() {
 			{
 				//system("CLS");
 				cout << "Search Results:" << endl;
+				int ranking = 1;
 				for (auto x : results) {
-					cout << "  " << x << endl;
+
+					cout <<"  "<< ranking<< ".  " << x << endl;
+					ranking++;
 				}
 				cout
 					<< endl
