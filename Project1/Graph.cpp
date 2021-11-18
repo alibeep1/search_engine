@@ -2,10 +2,9 @@
 
 Graph::Graph(vector<Edge> const& edges, int N)
 {
-
 	_n = N;
-	adjList.resize(_n);
-	bool* exists = new bool[_n];
+	adjList.resize(WEB_SIZE);
+	bool exists[WEB_SIZE];
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
 		currPr[i] = 0;
@@ -20,10 +19,6 @@ Graph::Graph(vector<Edge> const& edges, int N)
 	}
 
 	for (int i = 0; i < WEB_SIZE; i++)
-	{
-		visitedAsRoot[i] = false;
-	}
-	for (int i = 0; i < _n; i++)
 	{
 		exists[i] = 0;
 	}
@@ -82,7 +77,7 @@ void Graph::addEdge(Edge const& newEdge)
 void Graph::printGraph()
 {
 	cout << endl << "printing Graph" << endl;
-	for (int i = 0; i < _n; i++)
+	for (int i = 0; i < WEB_SIZE; i++)
 	{
 
 		for (auto x = adjList[i].begin(); x != adjList[i].end(); x++)
@@ -123,7 +118,7 @@ void Graph::PageRank()
 		currPr[i] = 0;
 	}
 	
-	for (int i = 0; i < _n; i++)
+	for (int i = 0; i < WEB_SIZE; i++)
 	{
 		string root = adjList[i][0];	//stores the name of the source being visited for the current iteration
 		int rootIndex = map[root];		//index of the root
@@ -154,11 +149,11 @@ void Graph::PageRank()
 
 	copyNewPrToOld();
 	
-	//Write the PageRank values to a CSV file
+	//Writes the PageRank values to a CSV file
 	myFile.open("pagerank.csv");
 
 	unordered_map<string, int>::iterator it = map.begin();
-	for (int i = 0; i < _n; i++)
+	for (int i = 0; i < WEB_SIZE; i++)
 	{
 		string url = it->first;
 		double pr = currPr[i];
@@ -167,7 +162,4 @@ void Graph::PageRank()
 		myFile << url << "," << pr << endl;
 	}
 	myFile.close();
-
-	first_run = false;
-	
 }

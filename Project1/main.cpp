@@ -89,25 +89,12 @@ int main() {
 	for (int i = 0; i < 100; i++)
 	{
 		graph.PageRank();
-
 	}
-	graph.printGraph();
 
-	
-		//graph.PageRank();
-		//graph.copyNewPrToOld();
+	//graph.printGraph();
 	read_pageRank(umap);
 
-
 	printMap(umap);
-	/*double sumOfPr = 0;
-	for (auto x : umap)
-	{
-		sumOfPr += x.second.getPageRank();
-	}*/
-
-	//cout << endl << "sum of PageRanks adds up to: " << sumOfPr << endl;
-
 	//indicates whether the user prefers to terminate or continue browsing
 	string response;
 
@@ -196,13 +183,9 @@ int main() {
 
 	} while (response == "Y");
 
-
-	
-
-	
 	system("CLS");		//clear screen
 	
-	printMap(umap);		//keep for debugging purposes
+	//printMap(umap);		//keep for debugging purposes
 
 	updateImpressionsFile();
 
@@ -247,43 +230,29 @@ void updateImpressionsFile()
 void read_clicks(unordered_map<string, WebPage>& umap)
 {
 	ifstream myFile;
-
 	myFile.open("clicks.csv");
 
-
 	string line, word;
-
-
 	while (myFile.good())
 	{
-
-
 		getline(myFile, line, '\n');
 
 		stringstream s(line);
 
 		int wordCounter = 0;
 		string temp_word;
+
 		while (getline(s, word, ','))
 		{
-
-
 			if (wordCounter == 0)
 			{
 				temp_word = word;
 			}
 			else {
-				/*cout << "word = " << word << endl;
-				cout << "umap[temp_word] = " << umap[temp_word].getUrl() << endl;*/
 				umap[temp_word].setClicks(stof(word));
 			}
-
-
 			wordCounter++;
-			//cout << "inner loop" << endl;
 		}
-
-		//cout << "outer loop" << endl;
 	}
 	myFile.close();
 }
@@ -294,7 +263,6 @@ vector<string> handle_input(string input, Trie* h) {
 
 	set<string> set1;
 
-	
 	bool hasOr = true;
 	int indexOr = -1;
 
@@ -313,9 +281,7 @@ vector<string> handle_input(string input, Trie* h) {
 	{
 		x = input.substr(i, 2);
 		if (x == "OR") {
-			//cout << "has OR !" << endl;
 			input.replace(i, 3, "");
-
 			indexOr = i;
 			break;
 		}
@@ -326,7 +292,6 @@ vector<string> handle_input(string input, Trie* h) {
 		x = input.substr(i, 3);
 		if (x == "AND")
 		{
-			//cout<<"Has AND !" << endl;
 			input.replace(i, 4,"");
 			indexAnd = i;
 			hasAnd = true;
@@ -430,8 +395,6 @@ void read_pageRank(unordered_map <string, WebPage>& umap) {
 
 	while (myFile.good())
 	{
-
-
 		getline(myFile, line, '\n');
 
 		stringstream s(line);
@@ -440,24 +403,16 @@ void read_pageRank(unordered_map <string, WebPage>& umap) {
 		string temp_word;
 		while (getline(s, word, ','))
 		{
-
-
 			if (wordCounter == 0)
 			{
 				temp_word = word;
 			}
 			else {
-				/*cout << "word = " << word << endl;
-				cout << "umap[temp_word] = " << umap[temp_word].getUrl() << endl;*/
 				umap[temp_word].setPageRank(stof(word));
 			}
 
-
 			wordCounter++;
-			//cout << "inner loop" << endl;
 		}
-
-		//cout << "outer loop" << endl;
 	}
 	myFile.close();
 }
@@ -491,11 +446,8 @@ void read_impressions(unordered_map<string, WebPage>& umap)
 				temp_word = word;
 			}
 			else {
-				/*cout << "word = " << word << endl;
-				cout << "umap[temp_word] = " << umap[temp_word].getUrl() << endl;*/
 				umap[temp_word].setImpressions(stof(word));
 			}
-			
 
 			wordCounter++;
 			//cout << "inner loop" << endl;
@@ -527,27 +479,17 @@ vector<Edge> read_web_graph(unordered_map<string, WebPage>& const umap)
 		Edge tempEdge;
 		while (getline(s, word, ','))
 		{
-			//cout << "wordcounter = " << wordcounter << endl;
 			if (wordcounter == 0)
 			{
-				//cout << "source-word = " << word << endl;
 				tempEdge.src = umap[word];
 			}
 			else {
-				//cout << "dest-word = " << word << endl;
 				tempEdge.dest = umap[word];
 			}
-
-				/*cout << "tempEdge.src = " << tempEdge.src.getUrl() << endl;
-				cout << "tempEdge.dest = " << tempEdge.dest.getUrl() << endl;*/
-
 			wordcounter++;
-			//cout << "inner loop" << endl;
+			
 		}
 			edges.push_back(tempEdge);
-
-		
-		//cout << "outer loop" << endl;
 	}
 	myfile.close();
 	return edges;

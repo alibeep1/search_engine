@@ -18,9 +18,7 @@ class Graph
 private:
 	int _n;
 public:
-	double d = 0.85;
-	bool executed_pr = true;
-	bool first_run = true;
+	
 	//Is our adjacency List of string values
 	vector<vector<string>> adjList;
 
@@ -35,9 +33,6 @@ public:
 
 	//Holds the (i-1)th iteration's pageRanks
 	double oldPr[WEB_SIZE];
-
-	//Checks whether a node is pointed to by any other node
-	bool visitedAsRoot[WEB_SIZE];
 
 	Graph(vector<Edge> const& edges, int N);
 
