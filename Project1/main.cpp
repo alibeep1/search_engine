@@ -185,7 +185,7 @@ int main() {
 
 	system("CLS");		//clear screen
 	
-	//printMap(umap);		//keep for debugging purposes
+	printMap(umap);		//keep for debugging purposes
 
 	updateImpressionsFile();
 
@@ -357,19 +357,29 @@ vector<string> handle_input(string input, Trie* h) {
 
 void handle_results(vector<string>& results)
 {
-	
+	int _choice = -1;
 	string choice = "";
 	cout << "Which website would you like to visit?" << endl;
 
-	cin >> choice;
-	if (umap.find(choice) == umap.end())
-	{
-		cout << "Page does not exist!" << endl;
+	cin >> _choice;
+	cout << "user response = " << _choice;
+	cout <<", Whose type is "<< typeid(_choice).name() << endl;
+	if (_choice <= results.size() && _choice >0) {
+		umap[results[_choice - 1]].incrementClicks();
+		cout << "You are visiting: " << umap[results[_choice - 1]].getUrl() << endl;
 	}
 	else {
-		umap[choice].incrementClicks();		//incrementing clicks after choice
-		cout << "You are visiting: " << choice << endl;
+		cout << "page does not exist" << endl;
 	}
+	//cin >> choice;
+	//if (umap.find(choice) == umap.end())
+	//{
+	//	cout << "Page does not exist!" << endl;
+	//}
+	//else {
+	//	umap[choice].incrementClicks();		//incrementing clicks after choice
+	//	cout << "You are visiting: " << choice << endl;
+	//}
 }
 
 bool compareScore(string i1, string i2) {
