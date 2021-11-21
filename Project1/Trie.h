@@ -8,7 +8,7 @@ using namespace std;
 struct Node {
     bool isLeaf;
     Node* character[CHAR_SIZE];
-    vector<WebPage> pages;
+    vector<string> pages;
 };
 // A class to store a Trie node
 class Trie
@@ -28,7 +28,7 @@ public:
         }
     }
 
-    void insert(string, WebPage);
+    void insert(string, string);
     void insertNode(Node);
 
     vector<string> search(string);

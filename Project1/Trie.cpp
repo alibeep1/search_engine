@@ -1,7 +1,7 @@
 #include"Trie.h"
 
 // Iterative function to insert a key into a Trie
-void Trie::insert(string key, WebPage page)
+void Trie::insert(string key, string page)
 {
     // start from the root node
     Node* curr = &node;
@@ -53,7 +53,7 @@ vector<string> Trie::search(string key)
     }
     for (int i = 0; i < curr->pages.size(); i++)
     {
-        vec.push_back(curr->pages[i].getUrl());
+        vec.push_back(curr->pages[i]);
        /* cout << curr->pages[i].getUrl();
         cout << endl;*/
     }

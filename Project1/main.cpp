@@ -542,7 +542,7 @@ void read_url_keywords(unordered_map<string, WebPage>& umap, Trie* h)
 				//pages[vertexCount].setUrl(word);
 			}
 			else {
-				h->insert(word, umap[temp_word]);
+				h->insert(word, temp_word);
 				//h->insert(word, pages[vertexCount]);
 			}
 
