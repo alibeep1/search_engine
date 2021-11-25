@@ -2,6 +2,7 @@
 
 Graph::Graph(vector<Edge> const& edges, int N)
 {
+
 	_n = N;
 	adjList.resize(WEB_SIZE);
 	bool exists[WEB_SIZE];
@@ -20,7 +21,7 @@ Graph::Graph(vector<Edge> const& edges, int N)
 
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
-		exists[i] = 0;
+		exists[i] = false;
 	}
 	for (int i = 0; i < edges.size(); i++)
 	{
@@ -29,16 +30,16 @@ Graph::Graph(vector<Edge> const& edges, int N)
 		//cout << "source number = " << source_number << endl;
 		int dest_number = edges[i].dest.getVertexNo();
 
-		map[edges[i].src.getUrl()] = edges[i].src.getVertexNo();
 
-		if (exists[source_number] == 0) {
+		map[edges[i].src.getUrl()] = edges[i].src.getVertexNo();
+		if (exists[source_number] == false) {
 			/*cout << "edges["<< i<< "].src = "<<edges[i].src.getUrl()  << endl;*/
 			adjList[source_number].push_back(edges[i].src.getUrl());
 
 			exists[source_number] = true;
 		}
 
-		if (exists[dest_number] == 0) {
+		if (exists[dest_number] == false) {
 			map[edges[i].dest.getUrl()] = edges[i].dest.getVertexNo();
 			adjList[dest_number].push_back(edges[i].dest.getUrl());
 
@@ -46,10 +47,12 @@ Graph::Graph(vector<Edge> const& edges, int N)
 
 		}
 
-
+		
 		adjList[source_number].push_back(edges[i].dest.getUrl());
+		
 	}
 
+	//handling sinks
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
 		//cout << "adjList[i][0].begin() = " << adjList[i][0] << "; adjList[i].size() = " <<adjList[i].size()<<endl;
@@ -87,7 +90,7 @@ void Graph::printGraph()
 				cout << (*x) << " --> ";
 			}
 			else {
-				cout << (*x) << " ";
+				cout << (*x) << " (vertexNo = "<<map[*x]<<")" ;
 			}
 		}
 		cout << endl;
@@ -120,28 +123,38 @@ void Graph::PageRank()
 	
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
+		
 		string root = adjList[i][0];	//stores the name of the source being visited for the current iteration
 		int rootIndex = map[root];		//index of the root
 		c = adjList[i].size() - 1;		//stores the number of outgoing links or edges from the current root
-
+		//cout << "for the root "<<root << endl;
 		for (auto x = adjList[i].begin(); x != adjList[i].end(); x++)
 		{
 			int xIndex = map[*x];		//index of the node being visited currently
 
 			if (*x != root) {		//given that the current node is not the root node, do...
-
+				
 				if (visitedAsNode[xIndex] == false)		//If it is the first time visiting the node, do...
 				{
-					visitedAsNode[xIndex] = true;		//mark this node as visited
 
 					//increment current page rank by the product of the damping factor and the old pagerank of the source + constant of normalization
-					currPr[xIndex] = currPr[xIndex] + (0.85 * (oldPr[rootIndex] / c)) + (0.15 / WEB_SIZE);		
+
+					currPr[xIndex] = currPr[xIndex] + (0.85 * (oldPr[rootIndex] / c)) + (0.15 / WEB_SIZE);	
+					/*if (*x == "www.test30.com") {
+						cout << "____" << endl;
+						cout << "currPr[test30.com] after updating = " << currPr[xIndex] << endl;
+					}*/
+					visitedAsNode[xIndex] = true;		//mark this node as visited
 				}
 				//if the current node had been previously visited as a destination, then do...
 				else {
 
 					//increment current pageRank by [...] BUT DON'T add to it the constant of normalization
 					currPr[xIndex] = currPr[xIndex] + (0.85 * (oldPr[rootIndex] / c));
+					/*if (*x == "www.test30.com") {
+						cout << "____" << endl;
+						cout << "currPr[test30.com] after updating = " << currPr[xIndex] << endl;
+					}*/
 				}
 			}
 		}
@@ -156,8 +169,9 @@ void Graph::PageRank()
 	for (int i = 0; i < WEB_SIZE; i++)
 	{
 		string url = it->first;
-		double pr = currPr[i];
+		double pr = currPr[it->second];
 		it++;
+
 
 		myFile << url << "," << pr << endl;
 	}

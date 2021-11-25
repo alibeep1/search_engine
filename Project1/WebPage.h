@@ -2,7 +2,7 @@
 #include<vector>
 #include<fstream>
 using namespace std;
-#define WEB_SIZE 4
+#define WEB_SIZE 30
 #pragma once
 
 

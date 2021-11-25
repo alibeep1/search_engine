@@ -78,23 +78,39 @@ int main() {
 	
 	
 	read_url_keywords(umap,head);		
-	
+	//printMap(umap);
 	read_impressions(umap);
 	read_clicks(umap);
+	//printMap(umap);
 
 	vector<Edge> edges = read_web_graph(umap);
 
+	//cout << "before initializing graph" << endl;
+
 	Graph graph(edges, WEB_SIZE);		//web graph
-	
+	//cout << "after initializing graph" << endl;
+	//graph.printGraph();
 	for (int i = 0; i < 100; i++)
 	{
+		//cout << "pageRank# " << i + 1 << endl;
 		graph.PageRank();
 	}
 
+	
+	//cout << "after executing pageRank" << endl;
+
 	//graph.printGraph();
 	read_pageRank(umap);
+	//double sumPageRanks = 0;
+	//for (auto x : umap)
+	//{
+	//	//cout << "for the page: " << x.second.getUrl() << endl;
+	//	sumPageRanks += x.second.getPageRank();
+	//}
 
-	printMap(umap);
+	//printMap(umap);
+	//cout << "sum of PageRanks add up to: " << sumPageRanks << endl;
+
 	//indicates whether the user prefers to terminate or continue browsing
 	string response;
 
@@ -102,10 +118,10 @@ int main() {
 	vector<string> results;
 
 	//stores the search query
+	cout << "Welcome!" << endl;
 	do
 	{
 		string query ="";
-		//system("CLS");
 		cout << "Please enter your search query:";
 
 		//clearing whitespace from the buffer such that the getline doesn't skip reading user input for subsequent iterations
@@ -181,11 +197,11 @@ int main() {
 
 		}
 
+		system("CLS");		//clear screen
 	} while (response == "Y");
 
-	system("CLS");		//clear screen
 	
-	printMap(umap);		//keep for debugging purposes
+	//printMap(umap);		//keep for debugging purposes
 
 	updateImpressionsFile();
 
@@ -270,11 +286,29 @@ vector<string> handle_input(string input, Trie* h) {
 	int indexAnd = -1;
 	string x = "";
 	
-	if (input.empty()) {
-		cout << "ERROR: input is empty!" << endl;
+	if (input.empty() || input.size() == 1) {
+		cout << "ERROR: input must be greater than 1 character!" << endl;
 		system("pause");
 		return temp;
 	}
+
+	string tempo ;
+	string wrd;
+	stringstream d(input);
+	while (getline(d, wrd, ' '))
+	{
+		wrd.erase(remove(wrd.begin(), wrd.end(),'\"'),wrd.end());
+		cout << wrd << endl;
+		tempo = tempo + wrd +" ";
+	}
+	//cout << "tempo:" << tempo << endl;
+
+	input = tempo;
+	/*if (input[0] == '\"' && input[input.size() - 1] == '\"') {
+		input.replace(0, 1,"");
+		input.replace(input.size() - 1, input.size(), "");
+		cout << "new input->" << input << endl;
+	}*/
 	
 	
 	for (int i = 0; i < input.size() -1; i++)
@@ -303,7 +337,23 @@ vector<string> handle_input(string input, Trie* h) {
 	//in the case that OR is not written explicitly
 	if (hasOr && indexOr == -1)
 	{
-		temp = h->search(input);
+		set<string> setA;
+		string word;
+
+		stringstream s(input);
+		
+		while (getline(s, word, ' '))
+		{
+			vector<string> temp1 = h->search(word);
+			for (auto d : temp1)
+			{
+				setA.insert(d);
+			}
+		}
+		for (auto x : setA)
+		{
+			temp.push_back(x);
+		}
 		
 	}
 	//in the case that OR is written explicitly
@@ -362,8 +412,8 @@ void handle_results(vector<string>& results)
 	cout << "Which website would you like to visit?" << endl;
 
 	cin >> _choice;
-	cout << "user response = " << _choice;
-	cout <<", Whose type is "<< typeid(_choice).name() << endl;
+	//cout << "user response = " << _choice;
+	//cout <<", Whose type is "<< typeid(_choice).name() << endl;
 	if (_choice <= results.size() && _choice >0) {
 		umap[results[_choice - 1]].incrementClicks();
 		cout << "You are visiting: " << umap[results[_choice - 1]].getUrl() << endl;
@@ -418,7 +468,7 @@ void read_pageRank(unordered_map <string, WebPage>& umap) {
 				temp_word = word;
 			}
 			else {
-				umap[temp_word].setPageRank(stof(word));
+				umap[temp_word].setPageRank(stod(word));
 			}
 
 			wordCounter++;
@@ -471,6 +521,7 @@ void read_impressions(unordered_map<string, WebPage>& umap)
 
 vector<Edge> read_web_graph(unordered_map<string, WebPage>& const umap)
 {
+	//cout << "reading web graph" << endl;
 	vector<Edge> edges;
 	
 	ifstream myfile;
@@ -502,6 +553,7 @@ vector<Edge> read_web_graph(unordered_map<string, WebPage>& const umap)
 			edges.push_back(tempEdge);
 	}
 	myfile.close();
+	//cout << "finished reading graph" << endl;
 	return edges;
 }
 
@@ -573,7 +625,7 @@ void printMap(unordered_map<string, WebPage>& umap)
 	for (auto x : umap)
 	{
 		cout << endl;
-		cout << "key: " << x.first <<  endl;
+		//cout << "key: " << x.first <<  endl;
 		x.second.printWebPage();
 	}
 	cout << endl;

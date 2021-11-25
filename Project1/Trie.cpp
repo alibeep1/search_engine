@@ -51,15 +51,17 @@ vector<string> Trie::search(string key)
             //return false;
         }
     }
-    for (int i = 0; i < curr->pages.size(); i++)
-    {
-        vec.push_back(curr->pages[i]);
-       /* cout << curr->pages[i].getUrl();
-        cout << endl;*/
-    }
+
+    return curr->pages;
+    //for (int i = 0; i < curr->pages.size(); i++)
+    //{
+    //    vec.push_back(curr->pages[i]);
+    //   /* cout << curr->pages[i].getUrl();
+    //    cout << endl;*/
+    //}
     // return true if the current node is a leaf and the
     // end of the string is reached
-    return vec;
+    //return vec;
     //return curr->isLeaf;
 }
 
